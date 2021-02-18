@@ -1,0 +1,173 @@
+---
+title: "exercises_week4"
+author: "Lindsey Greenhill"
+date: "2/17/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#options(show.signif..stars=FALSE)
+library(tidyverse)
+library(arm)
+```
+
+Excercises 4.2 and 4.3
+
+```{r data, echo=FALSE}
+df <- foreign::read.dta("http://www.stat.columbia.edu/~gelman/arm/examples/earnings/heights.dta")
+
+# there's some weird coding within the height1 and height2. seems like height 1
+# is in feet and height2 is remaining inches. Height seems to be total inches.
+# Also, there are two outliers in height2 where values are 98. 2 different
+# options on what to do with this data. I think it would be best to delete them
+# because there are no values for the earn variable for those observations
+# anyways so we wouldn't use them in the regression. I'm also changing the sex
+# variable to be coded as 0 or 1 because that is more the norm that I see.
+
+summary(df)
+
+df <- df %>%
+  mutate(sex = sex - 1) %>%
+  filter(!(is.na(earn)), ! (is.na(height))) %>%
+  select(earn, height, sex)
+
+```
+
+
+### Part b
+
+
+```{r 2b, echo=FALSE}
+
+# the model below predicts earnings from height
+
+fit_1 <- lm(earn ~ height, data = df)
+
+# the coefs seem to be statistically significant according to the summary at a
+# .001 level. The R squared is .09. The model accounts for 9% of the
+# variability. What this tells us is that we are leaving out important variables
+# that predict earnings more than height. So height seems to matter but it is a
+# small fraction of the actual story.
+
+display(fit_1)
+
+# what this does is making the variable centered at 0. They are distances from
+# the mean. Also have to filter out the NA values because we don't deal with
+# those until later in the book. When you have 0 height, the average outcome is
+# the intercept
+
+df <- df %>%
+  mutate(avg_height = height - mean(height),
+         avg_earn = earn - mean(earn))
+
+fit_2 <- lm(earn ~ avg_height, data = df)
+
+display(fit_2)
+
+```
+
+fit_1 is a regression model predicting earnings from height. The intercept of
+the model is -84078.3. In context, this means that a person who is 0 inches tall
+on average makes -84078.3, however, because nobody is 0 inches tall, this
+interpretation doesn't really make sense. The height coefficient is 1563.1. In
+context, this means that as height increases by 1 inch, earnings increase by
+1563.1 on average. This coefficient is statistically significant, as it is
+outside 2 standard errors from 0 (the t statistic is 11.7). This tells us that
+height matters in predicting earnings. However, the R squared of this model is
+.09, meaning that the model accounts for about 9% of the variability. This isn't
+a very high R squared value, telling us that we are leaving out important
+predictors of earnings.
+
+In order to intepret the intercept from this model as average earnings for
+people with average height, we should transform the height variable to be
+centered at its mean. To do this, I created a new variable called avg_height
+which is equal to the height variable minus the mean of the height variable. So,
+a person of average height will have an avg_height value of 0. This new model
+(fit_2) has an intercept of 20014.86, meaning that a person with avg_height of
+0, or a person with average height, makes 20014.86 on average. The avg_height
+coefficient is 1563.14. In context, this means that as avg_height increased by
+1, or if a person is an inch taller than the average height, earnings increases
+by 1563.14 on average. This coefficeint is statistically significant, as it is
+outside 2 standard errors from 0. The R squared for this  model is
+also .09, meaning that the model accounts for about 9% of the variability.
+
+### Part c
+
+```{r}
+
+# different model combinations
+
+fit_3 <- lm(earn ~ avg_height + sex, data = df)
+summary(fit_3)
+
+fit_4 <- lm(earn ~ avg_height + sex + avg_height*sex, data = df)
+summary(fit_4)
+
+fit_5 <- lm(earn ~ sex, data = df)
+summary(fit_5)
+
+```
+
+I fit three different models for this question. The first, fit_3, is a regression
+model predicting earnings from avg_height and sex. The second, fit_4, is a
+regression model predicting earnings from avg_height, sex, and the interaction
+of avg_height and sex. The third, fit_5, is a regression model predicting
+earnings from sex. For reference, sex = 0 is male and sex = 1 is female. 
+
+**fit_3 interpretation:**
+
+- The intercept is 27025.5, meaning that a person of average height and male
+makes 27025.5 on average.
+- The avg_height coefficient is 550.5, meaning that as avg_height increases by
+1, earnings increase by 550.5 on average, holding sex constant. This coefficient
+is statistically significant.
+- The sex coefficient is -11254.6, meaning that being female decreases earnings
+by 11254.6 on average, holding avg_height constant. This coefficient is
+statistically significant.
+- The R squared is .129, meaning that the model accounts for about 12.9% of the
+variability
+
+**fit_4 interpretation:**
+
+- The intercept is 26259.2, meaning that a person of average height and male sex
+makes 26259.2 on average.
+- The avg_height coefficient is 772.4, meaning that as avg_height increases by
+1, earnings increase by 772.4 on average, holding sex constant. This coefficient
+is statistically significant.
+- The sex coefficient is -10868.3, meaning that being female decreases earnings
+by 10868.3 on average, holding avg_height constant. This coefficient is
+statistically significant.
+- The interaction term coefficient is -403.7, meaning that a 1 inch increase in
+height has an additioinal 403.7 decrease on earnings if you are female. This
+interaction is not statistically significant.
+- The R squared is .1296, meaning that the model accounts for about 12.99% of
+the variability
+
+**fit_5 interpretation:**
+
+- The intercept is 28926.9, meaning that a person of average height and male sex
+makes 28926.9 on average.
+- The sex coefficient is -14307, meaning that being female decreases earnings by
+-14307 on average. This coefficient is statistically significant.
+- The R squared is .1232, meaning that the model accounts for about 12.32% of
+the variability
+
+**model choice**
+
+Interestingly, all of these models have very similar R squared values, so it is
+difficult to decide which model to use based off of that. With that being said,
+the models which incorporate height and sex (fit_3 and fit_4) have slightly
+higher R squared values, so I am inclined to prefer one of those. In between
+fit_3 and fit_4, it doesn't seem like the interaction adds anything substantial
+to the model, as the interaction coefficient is not statistically significant,
+so for parsimony's sake, I would go with fit_3.
+
+
+### Part d
+
+See part c for coefficient interpretations. 
+
+
+
+
