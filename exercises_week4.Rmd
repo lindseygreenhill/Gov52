@@ -12,7 +12,8 @@ library(tidyverse)
 library(arm)
 ```
 
-Excercises 4.2 and 4.3
+
+## Question 4.2
 
 ```{r data, echo=FALSE}
 df <- foreign::read.dta("http://www.stat.columbia.edu/~gelman/arm/examples/earnings/heights.dta")
@@ -167,6 +168,8 @@ so for parsimony's sake, I would go with fit_3.
 ### Part d
 
 See part c for coefficient interpretations. 
+
+## Question 4.3
 
 
 
