@@ -171,6 +171,29 @@ See part c for coefficient interpretations.
 
 ## Question 4.3
 
+### Part a
+
+```{r}
+
+ggplot() + 
+  lims(x = c(0,10), y = c(1,10)) +
+  annotate("segment",x = 3,xend = 6, yend = 7,y = 3) + 
+  annotate("segment",x = 4,xend = 8, yend = 8,y = 2) + annotate("segment",x = 3.6,xend = 6.1, yend = 4,y = 1) 
+
+
+ggplot(data.frame(x=c(0,10)), aes(x)) +
+  stat_function(fun = function(.x) 2.6*.x + 161, col = "red") +
+  stat_function(fun = function(.x) 33.6 *.x -3.6 * .x^2 + 96.2, col = "steelblue2") +
+  labs(title = "Weights versus Age Regression Lines",
+       x = "Age",
+       y = "Weight") +
+  theme_classic()
+
+
+
+```
+
+
 
 
 
