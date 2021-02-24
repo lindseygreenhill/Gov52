@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2021.2.14)  23 FEB 2021 23:06
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2021.2.14)  23 FEB 2021 23:51
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -582,7 +582,22 @@ File: exercises_week4_files/figure-latex/4-1.pdf Graphic file (type pdf)
 Package pdftex.def Info: exercises_week4_files/figure-latex/4-1.pdf  used on in
 put line 481.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-[5] [6 <./exercises_week4_files/figure-latex/4-1.pdf>] (./exercises_week4.aux)
+<exercises_week4_files/figure-latex/4-2.pdf, id=67, 469.755pt x 325.215pt>
+File: exercises_week4_files/figure-latex/4-2.pdf Graphic file (type pdf)
+<use exercises_week4_files/figure-latex/4-2.pdf>
+Package pdftex.def Info: exercises_week4_files/figure-latex/4-2.pdf  used on in
+put line 482.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 481--483
+[]
+ []
+
+[5]
+Overfull \vbox (25.40106pt too high) has occurred while \output is active []
+
+[6 <./exercises_week4_files/figure-latex/4-1.pdf> <./exercises_week4_files/figu
+re-latex/4-2.pdf>] (./exercises_week4.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
@@ -590,10 +605,10 @@ Package rerunfilecheck Info: File `exercises_week4.out' has not changed.
 (rerunfilecheck)             Checksum: 178F1DB0F7B56E9E22C520EDE98D0635;582.
  ) 
 Here is how much of TeX's memory you used:
- 10477 strings out of 481288
- 154389 string characters out of 5915561
+ 10483 strings out of 481288
+ 154649 string characters out of 5915561
  451872 words of memory out of 5000000
- 27170 multiletter control sequences out of 15000+600000
+ 27175 multiletter control sequences out of 15000+600000
  448302 words of font info for 68 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  71i,10n,74p,353b,382s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -617,10 +632,10 @@ ers/lindseygreenhill/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtk10.pf
 b></Users/lindseygreenhill/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmt
 t10.pfb></Users/lindseygreenhill/Library/TinyTeX/texmf-dist/fonts/type1/public/
 lm/lmtti10.pfb>
-Output written on exercises_week4.pdf (6 pages, 251125 bytes).
+Output written on exercises_week4.pdf (6 pages, 254786 bytes).
 PDF statistics:
- 139 PDF objects out of 1000 (max. 8388607)
- 114 compressed objects within 2 object streams
+ 145 PDF objects out of 1000 (max. 8388607)
+ 118 compressed objects within 2 object streams
  24 named destinations out of 1000 (max. 500000)
- 54 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 59 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -182,17 +182,26 @@ See part c for coefficient interpretations.
 # had to adjust coeffients to go from age10 to just age so I  divided all of the
 # coefficients for age10 by 10 and the quadratic term by 100
 
-ggplot(data.frame(x=c(0,100)), aes(x)) +
+ggplot(data.frame(x=c(18,100)), aes(x)) +
   stat_function(fun = function(.x) (2.6/10)*.x + 161, col = "red") +
-  stat_function(fun = function(.x) (33.6/10) *.x - (3.6/100) * .x^2 + 96.2, col = "steelblue2") +
-  stat_function(fun = function(.x) 157.2 + 19.110, color = "darkgreen", xlim = c(30,44)) +
-  stat_function(fun = function(.x) 157.2 + 27.210, color = "darkgreen", xlim = c(45,64)) +
-  stat_function(fun = function(.x) 157.2 + 8.5, color = "darkgreen", xlim = c(65,100)) +
-  stat_function(fun = function(.x) 157.2, color = "darkgreen", xlim = c(0,29)) +
+  stat_function(fun = function(.x) (33.6/10) *.x - (3.2/100) * .x^2 + 96.2, col = "steelblue2") +
   labs(title = "Weights versus Age Regression Lines",
        x = "Age",
        y = "Weight") +
   theme_classic()
+
+
+ggplot(data.frame(x=c(18,100)), aes(x)) +
+  stat_function(fun = function(.x) 157.2 + 19.110, color = "darkgreen", xlim = c(30,44)) +
+  stat_function(fun = function(.x) 157.2 + 27.210, color = "darkgreen", xlim = c(45,64)) +
+  stat_function(fun = function(.x) 157.2 + 8.5, color = "darkgreen", xlim = c(65,100)) +
+  stat_function(fun = function(.x) 157.2, color = "darkgreen", xlim = c(18,29)) +
+  labs(title = "Weights versus Age Step Function",
+       x = "Age",
+       y = "Weight") +
+  theme_classic()
+
+
 
 
 
