@@ -179,16 +179,18 @@ See part c for coefficient interpretations.
 
 ```{r 4, echo=FALSE}
 
+# had to adjust coeffients to go from age10 to just age so I  divided all of the
+# coefficients for age10 by 10 and the quadratic term by 100
 
-ggplot(data.frame(x=c(0,10)), aes(x)) +
-  stat_function(fun = function(.x) 2.6*.x + 161, col = "red") +
-  stat_function(fun = function(.x) 33.6 *.x -3.6 * .x^2 + 96.2, col = "steelblue2") +
-  stat_function(fun = function(.x) 157.2 + 19.1, color = "darkgreen", xlim = c(3,4.4)) +
-  stat_function(fun = function(.x) 157.2 + 27.2, color = "darkgreen", xlim = c(4.5,6.4)) +
-  stat_function(fun = function(.x) 157.2 + 8.5, color = "darkgreen", xlim = c(6.5,10)) +
-  stat_function(fun = function(.x) 157.2, color = "darkgreen", xlim = c(0,2.9)) +
+ggplot(data.frame(x=c(0,100)), aes(x)) +
+  stat_function(fun = function(.x) (2.6/10)*.x + 161, col = "red") +
+  stat_function(fun = function(.x) (33.6/10) *.x - (3.6/100) * .x^2 + 96.2, col = "steelblue2") +
+  stat_function(fun = function(.x) 157.2 + 19.110, color = "darkgreen", xlim = c(30,44)) +
+  stat_function(fun = function(.x) 157.2 + 27.210, color = "darkgreen", xlim = c(45,64)) +
+  stat_function(fun = function(.x) 157.2 + 8.5, color = "darkgreen", xlim = c(65,100)) +
+  stat_function(fun = function(.x) 157.2, color = "darkgreen", xlim = c(0,29)) +
   labs(title = "Weights versus Age Regression Lines",
-       x = "age10",
+       x = "Age",
        y = "Weight") +
   theme_classic()
 
