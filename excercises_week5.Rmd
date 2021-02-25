@@ -1,0 +1,279 @@
+---
+title: "excercises_week_5"
+author: "Lindsey Greenhill"
+date: "2/24/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(arm)
+pollution <- foreign::read.dta("http://www.stat.columbia.edu/~gelman/arm/examples/pollution/pollution.dta")
+```
+
+excercises 4.4 and 4.8
+
+## Question 3
+
+### Part a
+
+The scatterplot we created of Mortality rate vs. Nitric Oxide suggests that a
+linear regression without any transformations will not fit the data very well,
+as many of the data points are clustered around the start of the range and only
+a few data points appear around the end of the range.
+
+Fitting a linear regression (fit_1) and looking at its residuals confirms that a
+linear regression may not be the best fit for this data. The residuals are not
+randomly distributed and are clustered at the end of the range, telling us that
+the linear regression is not a good fit.
+
+
+```{r 4a, results =  "asis"}
+
+# creating scatterplot. Data looks like a lot of the data is very clustered
+# around 0 with some values much further away.
+
+pollution %>%
+  ggplot(aes(x = nox, y = mort)) +
+  geom_point() +
+  labs(title = "Mortality Rate vs. Nitric Oxide",
+       x =  "Nitric Oxide Level",
+       y =  "Mortality Rate") +
+  theme_classic()
+
+# fitting the linear regression
+
+fit_1 <- lm(mort ~ nox, data = pollution)
+
+# creating the residuals
+
+plot(fit_1, which = 1, las = 1, )
+
+```
+### Part b
+
+I chose to do a logarithmic transformation of the data, meaning that I ran a
+regression on mortality rate vs. log(nox), where nox is our nitric oxide
+variable from part a. The residuals for this regression look much better than
+the linear regression from part a. They are relatively randomly distributed and
+aren't clustered around any one point, telling us that the model is not a bad
+fit.
+
+```{r}
+
+# creating a log version of nox
+
+pollution <- pollution %>%
+  mutate(lognox = log(nox))
+
+
+fit_2 <- lm(mort ~ lognox, data = pollution)
+
+# creating the residuals. This residual plots look a lot better than the other
+# residuals. They are more randomly distributed and not clustered.
+
+plot(fit_2, which = 1, las = 1, )
+```
+
+### Part c
+
+The slope coefficient from the model in b is 15,34. The interpretation of this coefficient is a difference of 1% in nitrix oxide levels is associated with an (approximate) positive difference of .1534% in mortality rate. 
+
+
+### Part d
+
+To determine whether or not I should use logarithmic transformations for sulfur dioxide and hydrocarbons, I ran a linear regression on mortality rate vs. each variable and mortality rate vs. each log variable and compared the scatter plots and residual plots. 
+
+The residual plot for the variable follows the scatterplot. 
+
+For both hc and so2, the log version of the regression produces residuals that appear more randomly distributed, especially for hc. So, I decided to use the log version of both so2 and hc in my regression. 
+```{r 4d}
+
+# creating logged versions of the variables
+
+pollution <- pollution %>%
+  mutate(logso2 = log(so2),
+         loghc = log(hc),
+         logmort = log(mort))
+
+# maybe want to do the log of so2
+
+pollution %>%
+  ggplot(aes(x = so2, y = mort)) +
+  geom_point() +
+  labs(title = "Mortality Rate vs. so2",
+       x =  "so2 Level",
+       y =  "Mortality Rate") +
+  theme_classic()
+
+# definitely want to do the log of hc
+
+pollution %>%
+  ggplot(aes(x = hc, y = mort)) +
+  geom_point() +
+  labs(title = "Mortality Rate vs. hc",
+       x =  "hc Level",
+       y =  "Mortality Rate") +
+  theme_classic()
+
+pollution %>%
+  ggplot(aes(x = logso2, y = mort)) +
+  geom_point() +
+  labs(title = "Mortality Rate vs. so2",
+       x =  "so2 Level",
+       y =  "Mortality Rate") +
+  theme_classic()
+
+# definitely want to do the log of hc
+
+pollution %>%
+  ggplot(aes(x = loghc, y = mort)) +
+  geom_point() +
+  labs(title = "Mortality Rate vs. hc",
+       x =  "hc Level",
+       y =  "Mortality Rate") +
+  theme_classic()
+
+# creating models and residul plots for so2 and hc for log and non log
+
+fit_so2 <- lm(mort ~ so2, data = pollution)
+fit_logso2 <- lm(mort ~ logso2, data = pollution)
+
+plot(fit_so2, which = 1, las = 1, )
+plot(fitlogso2, which = 1, las = 1, )
+
+fit_hc <- lm(mort ~ hc, data = pollution)
+fit_loghc <- lm(mort ~ loghc, data = pollution)
+
+plot(fit_so2, which = 1, las = 1, )
+plot(fitlogso2, which = 1, las = 1, )
+
+
+```
+
+
+The plots below compare the residuals for the non log and log regressions (at
+this point, y is still not in log form). The residuals for the log regression
+are more evenly distributed and random, confirming my decision above to use the
+log version of both so2 and hc.
+
+```{r 4d_b}
+
+# creating two regression to compare
+
+fit_all <- lm(mort ~ nox + so2 + hc, data = pollution)
+
+fit_all_log <- lm(mort ~ lognox + logso2 + loghc, data = pollution)
+
+# the residuals look better for the logged model
+
+plot(fit_all, which = 1, las = 1, )
+plot(fit_all_log, which = 1, las = 1, )
+
+
+
+# log level. 
+# level log: 1% change in x is associated with a beta/100 change in y, on average
+# log log: 1% change in x is associated with a beta % change in y
+
+
+```
+
+I also decided to see how running a regression on log mortality rate vs the log
+other variables affected the model. I would prefer to have both sides of the
+regression be logged, so the interpretation of the coefficients is simpler.
+Looking at the residual plot below, using log y in the regression doesn't appear
+to make the residuals any less random, so I will use log mortality in my model.
+
+
+```{r 4d_c}
+# benefit of also logging y: the coefficients become easier to interpret
+
+fit_all_log_y <- lm(logmort ~ lognox + logso2 + loghc, data = pollution)
+
+# logging the y doesn't seem to make the residuals less random
+
+plot(fit_all_log_y, which = 1, las = 1, )
+```
+
+The plot below the fitted regression model. Because I couldn't include all 3
+IV's, I displayed logmort vs lognox with loghc and logso2 held constant at their
+25th, 50th, and 75th quantiles.
+
+The table below shows the regression results for the model. 
+
+```{r 4d_d, results = "asis", message=FALSE}
+
+# showing plot of fitted model
+
+pollution %>%
+  ggplot(aes(y = logmort)) +
+  stat_function(fun = function(.x) 6.82675
+                + .05984*.x +
+                  (.01431*mean(pollution$logso2)) +
+                  (-.06081*mean(pollution$loghc)),
+                col  = "steelblue2") +
+    stat_function(fun = function(.x) 6.82675
+                + .05984*.x +
+                  (.01431*quantile(pollution$logso2, probs = .25)) +
+                  (-.06081*quantile(pollution$loghc, probs = .25)),
+                col  = "indianred") +
+      stat_function(fun = function(.x) 6.82675
+                + .05984*.x +
+                  (.01431*quantile(pollution$logso2, probs = .75)) +
+                  (-.06081*quantile(pollution$loghc, probs = .75)),
+                col  = "darkgreen") +
+  annotate("text", x = 5, y = 6.9, label = "75th percentile",
+           col = "darkgreen") +
+    annotate("text", x = 5, y = 7.1, label = "25th percentile",
+           col = "indianred") +
+  geom_point(aes(x = lognox)) +
+  labs(title = "logmort vs lognox",
+       subtitle = "logso2, loghc at 25th, 50th, 75th percentiles",
+       x = lognox) +
+  theme_classic()
+
+# showing regression table
+
+stargazer(fit_all_log_y, type = "latex",
+          title = "Regression Results Log Model")
+```
+The coefficient for lognox is .06. In context, this means that a 1% increase in
+nitric oxide levels is associated with a .06% increase in mortality rate, on
+average.
+
+The coefficient for logso2 is .014. In context, this means that a 1% increase in
+so2 levels is associated with a .014% increase in mortality rate, on average.
+
+the coefficient for loghc is -.061. In context, this means that a 1% increase in
+hc levels is associated with a .061% decrease in mortality rate, on average.
+
+### Part e
+
+```{r 4e}
+
+# taking first 30 rows of data
+
+pol_train <- pollution %>%
+  head(30)
+
+# taking last 30 rows of data
+
+pol_test <- pollution %>%
+  tail(30)
+
+# fitting the training model
+
+fit_all_log_y_train <- lm(logmort ~ lognox + logso2 + loghc, data = pol_train)
+
+# creating predictions with test data
+
+predictions <- predict(fit_all_log_y_train, newdata = pol_test) %>%
+  as_tibble()
+
+```
+
+
+
+
