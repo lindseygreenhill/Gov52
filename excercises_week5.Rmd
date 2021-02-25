@@ -9,6 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(arm)
+library(stargazer)
 pollution <- foreign::read.dta("http://www.stat.columbia.edu/~gelman/arm/examples/pollution/pollution.dta")
 ```
 
@@ -141,13 +142,13 @@ fit_so2 <- lm(mort ~ so2, data = pollution)
 fit_logso2 <- lm(mort ~ logso2, data = pollution)
 
 plot(fit_so2, which = 1, las = 1, )
-plot(fitlogso2, which = 1, las = 1, )
+plot(fit_logso2, which = 1, las = 1, )
 
 fit_hc <- lm(mort ~ hc, data = pollution)
 fit_loghc <- lm(mort ~ loghc, data = pollution)
 
 plot(fit_so2, which = 1, las = 1, )
-plot(fitlogso2, which = 1, las = 1, )
+plot(fit_logso2, which = 1, las = 1, )
 
 
 ```
@@ -228,10 +229,10 @@ pollution %>%
            col = "darkgreen") +
     annotate("text", x = 5, y = 7.1, label = "25th percentile",
            col = "indianred") +
-  geom_point(aes(x = lognox)) +
+  geom_point(aes(x = pollution$lognox)) +
   labs(title = "logmort vs lognox",
        subtitle = "logso2, loghc at 25th, 50th, 75th percentiles",
-       x = lognox) +
+       x = "lognox") +
   theme_classic()
 
 # showing regression table
@@ -251,7 +252,7 @@ hc levels is associated with a .061% decrease in mortality rate, on average.
 
 ### Part e
 
-```{r 4e}
+```{r 4e_a}
 
 # taking first 30 rows of data
 
@@ -269,9 +270,26 @@ fit_all_log_y_train <- lm(logmort ~ lognox + logso2 + loghc, data = pol_train)
 
 # creating predictions with test data
 
-predictions <- predict(fit_all_log_y_train, newdata = pol_test) %>%
-  as_tibble()
+predictions <- predict(fit_all_log_y_train, newdata = pol_test)
 
+pred_df <- cbind(predictions, pol_test)
+
+```
+
+The plot below shows the predicted values of logmort vs. the actual values of
+logmort from the second half of the data frame. The points to the left of the
+line are overpredictions and the points to the right of the line are
+underpredictions. From this plot, it appears that the predictions are relatively
+close to their true values, but the model overestimated more points than
+underestimated.
+```{r 4e_b}
+pred_df %>%
+  ggplot(aes(x = logmort, y = predictions)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, col = "red") +
+  labs(title = "Predicted vs Actual logmort",
+       subtitle = "Line at predictions = logmort")
+  theme_classic()
 ```
 
 
