@@ -283,13 +283,23 @@ underpredictions. From this plot, it appears that the predictions are relatively
 close to their true values, but the model overestimated more points than
 underestimated.
 ```{r 4e_b}
+
+# plot of yhat vs y
+
 pred_df %>%
   ggplot(aes(x = logmort, y = predictions)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, col = "red") +
   labs(title = "Predicted vs Actual logmort",
-       subtitle = "Line at predictions = logmort")
+       subtitle = "Line at predictions = logmort") +
   theme_classic()
+
+# calculating MSE
+
+pred_df <- pred_df %>%
+  mutate(sq_error = (predictions - logmort)^2)
+
+MSE <- sum(pred_df$sq_error) / nrow(pred_df)
 ```
 
 
