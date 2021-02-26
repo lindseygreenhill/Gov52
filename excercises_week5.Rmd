@@ -7,9 +7,10 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse)
+library(ggpubr)
 library(arm)
 library(stargazer)
+library(tidyverse)
 pollution <- foreign::read.dta("http://www.stat.columbia.edu/~gelman/arm/examples/pollution/pollution.dta")
 ```
 
@@ -52,6 +53,7 @@ fit_1 <- lm(mort ~ nox, data = pollution)
 plot(fit_1, which = 1, las = 1, )
 
 ```
+
 ### Part b
 
 I chose to do a logarithmic transformation of the data, meaning that I ran a
@@ -79,16 +81,24 @@ plot(fit_2, which = 1, las = 1, )
 
 ### Part c
 
-The slope coefficient from the model in b is 15,34. The interpretation of this coefficient is a difference of 1% in nitrix oxide levels is associated with an (approximate) positive difference of .1534% in mortality rate. 
+The slope coefficient from the model in b is 15,34. The interpretation of this
+coefficient is a difference of 1% in nitrix oxide levels is associated with an
+(approximate) positive difference of .1534% in mortality rate.
 
 
 ### Part d
 
-To determine whether or not I should use logarithmic transformations for sulfur dioxide and hydrocarbons, I ran a linear regression on mortality rate vs. each variable and mortality rate vs. each log variable and compared the scatter plots and residual plots. 
+To determine whether or not I should use logarithmic transformations for sulfur
+dioxide and hydrocarbons, I ran a linear regression on mortality rate vs. each
+variable and mortality rate vs. each log variable and compared the scatter plots
+and residual plots. 
 
-The residual plot for the variable follows the scatterplot. 
+The graphs below show the scatter plots for both the non log so2 and hc variables as well as the log verison of each variable. It looks like a logarithmic transformation might be a better for for both of these variables based on their scatterplots. I will confirm this by looking at the residual plots for each variable. 
 
-For both hc and so2, the log version of the regression produces residuals that appear more randomly distributed, especially for hc. So, I decided to use the log version of both so2 and hc in my regression. 
+The residual plot for the variable follows the scatterplot.
+For both hc and so2, the log version of the regression produces residuals that
+appear more randomly distributed, especially for hc. So, I decided to use the
+log version of both so2 and hc in my regression.
 ```{r 4d}
 
 # creating logged versions of the variables
@@ -100,7 +110,7 @@ pollution <- pollution %>%
 
 # maybe want to do the log of so2
 
-pollution %>%
+so2_plot <- pollution %>%
   ggplot(aes(x = so2, y = mort)) +
   geom_point() +
   labs(title = "Mortality Rate vs. so2",
@@ -110,7 +120,7 @@ pollution %>%
 
 # definitely want to do the log of hc
 
-pollution %>%
+hc_plot <- pollution %>%
   ggplot(aes(x = hc, y = mort)) +
   geom_point() +
   labs(title = "Mortality Rate vs. hc",
@@ -118,43 +128,65 @@ pollution %>%
        y =  "Mortality Rate") +
   theme_classic()
 
-pollution %>%
+logso2_plot <- pollution %>%
   ggplot(aes(x = logso2, y = mort)) +
   geom_point() +
-  labs(title = "Mortality Rate vs. so2",
+  labs(title = "Mortality Rate vs. log(so2)",
        x =  "so2 Level",
        y =  "Mortality Rate") +
   theme_classic()
 
 # definitely want to do the log of hc
 
-pollution %>%
+loghc_plot <- pollution %>%
   ggplot(aes(x = loghc, y = mort)) +
   geom_point() +
-  labs(title = "Mortality Rate vs. hc",
+  labs(title = "Mortality Rate vs. log(hc)",
        x =  "hc Level",
        y =  "Mortality Rate") +
   theme_classic()
 
-# creating models and residul plots for so2 and hc for log and non log
+ggarrange(so2_plot, logso2_plot,
+          hc_plot, loghc_plot)
+
+```
+
+The plots below show the residuals for the so2 model and the log(so2) model. The
+residuals for the log model look more randomly distributed than the residuals
+for the non log model, so I am inclined to use the logso2 variable in my final
+model.
+
+```{r 4_res_1}
+
+# creating models and residual plots for so2 and hc for log and non log
 
 fit_so2 <- lm(mort ~ so2, data = pollution)
 fit_logso2 <- lm(mort ~ logso2, data = pollution)
 
-plot(fit_so2, which = 1, las = 1, )
-plot(fit_logso2, which = 1, las = 1, )
-
 fit_hc <- lm(mort ~ hc, data = pollution)
 fit_loghc <- lm(mort ~ loghc, data = pollution)
 
+# using par to display all of them together
+{
 plot(fit_so2, which = 1, las = 1, )
 plot(fit_logso2, which = 1, las = 1, )
+}
+```
 
+The plots below show the residuals for the hc model and the log(hc) model. The
+residuals for the log model look dramatically more randomly distributed than the
+residuals for the non log model, so I am inclined to use the loghc variable in
+my final model.
 
+```{r  4_res_2}
+{
+plot(fit_hc, which = 1, las = 1, )
+plot(fit_loghc, which = 1, las = 1, )
+}
 ```
 
 
-The plots below compare the residuals for the non log and log regressions (at
+The plots below compare the residuals for the non log and log regressions including nox, so2, and hc (at
 this point, y is still not in log form). The residuals for the log regression
 are more evenly distributed and random, confirming my decision above to use the
 log version of both so2 and hc.
@@ -198,7 +230,7 @@ fit_all_log_y <- lm(logmort ~ lognox + logso2 + loghc, data = pollution)
 plot(fit_all_log_y, which = 1, las = 1, )
 ```
 
-The plot below the fitted regression model. Because I couldn't include all 3
+The plot below shows the fitted regression model. Because I couldn't include all 3
 IV's, I displayed logmort vs lognox with loghc and logso2 held constant at their
 25th, 50th, and 75th quantiles.
 
@@ -240,6 +272,7 @@ pollution %>%
 stargazer(fit_all_log_y, type = "latex",
           title = "Regression Results Log Model")
 ```
+
 The coefficient for lognox is .06. In context, this means that a 1% increase in
 nitric oxide levels is associated with a .06% increase in mortality rate, on
 average.
@@ -282,6 +315,12 @@ line are overpredictions and the points to the right of the line are
 underpredictions. From this plot, it appears that the predictions are relatively
 close to their true values, but the model overestimated more points than
 underestimated.
+
+Additionally, the Mean Squared Error of the predictions is .004, which is hard
+to interpret on its own without conparisonns to other models, but also seems
+very small to me.
+
+
 ```{r 4e_b}
 
 # plot of yhat vs y
@@ -301,6 +340,99 @@ pred_df <- pred_df %>%
 
 MSE <- sum(pred_df$sq_error) / nrow(pred_df)
 ```
+
+## Question 8
+
+```{r 8a, include=FALSE}
+
+# reading in the data for the problem. Need to fit regressions predicting
+# evaluations given a few inputs. Should include btystdave, one interaction, and
+# one transformation. The beauty variable is btstdave. Should try the female
+# (female) variable (maybe an interaction with it) and also age (age). And lso
+# minority (minority)
+
+beauty <- read.csv("http://www.stat.columbia.edu/~gelman/arm/examples/beauty/ProfEvaltnsBeautyPublic.csv",
+                   header = TRUE)
+```
+
+
+
+```{r 8_b}
+
+# looking at btystdave. The residuals seem to be clustered more toward the
+# minimum of the range.
+
+fit_bty <- lm(courseevaluation ~ btystdave, data = beauty)
+
+bty_plot <- ggplot(beauty, aes(x = btystdave, y = courseevaluation)) +
+  geom_point() +
+  labs(title = "Evaluations vs btystdave") +
+  theme_classic()
+
+plot(fit_bty, which = 1, las = 1, )
+
+# looking at age. I see quadratic transformations happen with age a lot, so
+# maybe I should try it
+
+fit_age <- lm(courseevaluation ~ age, data = beauty)
+
+age_plot <- ggplot(beauty, aes(x = age, y = courseevaluation)) +
+  geom_point() +
+  labs(title = "Evaluations vs age") +
+  theme_classic()
+
+plot(fit_age, which = 1, las = 1, )
+
+# looking at class enrollment with prediction that smaller classes have better
+# evaluations. I should definitely try logarithmic transformation here.
+
+fit_students <- lm(courseevaluation ~ students, data = beauty)
+
+students_plot <- ggplot(beauty, aes(x = students, y = courseevaluation)) +
+  geom_point() +
+  labs(title = "Evaluations vs enrollment") +
+  theme_classic()
+
+plot(fit_students, which = 1, las = 1, )
+
+# creating a logged version of beauty
+
+beauty  <- beauty %>%
+  mutate(logstudents = log(students))
+
+fit_students_log <- lm(courseevaluation ~ logstudents, data = beauty)
+
+students_plot_log <- ggplot(beauty, aes(x = logstudents, y = courseevaluation)) +
+  geom_point() +
+  labs(title = "Evaluations vs log(enrollment)") +
+  theme_classic()
+
+plot(fit_students_log, which = 1, las = 1, )
+```
+
+```{r 8_c, results = "asis"}
+
+# at this point I am going to try an initial model with all of the variables and
+# see how it looks. Look at the residuals, etc.
+
+fit_all <- lm(courseevaluation ~ btystdave  + logstudents + age + female + minority,
+              data =  beauty)
+
+
+fit_int <- lm(courseevaluation ~ btystdave*female  + logstudents + female + minority,
+              data =  beauty)
+
+fit_int_no_min <- lm(courseevaluation ~ btystdave*female  + logstudents + female,
+              data =  beauty)
+
+stargazer(fit_all, fit_int, fit_int_no_min, type = "text")
+
+
+
+```
+
+
+
 
 
 
