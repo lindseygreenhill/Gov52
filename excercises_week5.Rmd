@@ -81,9 +81,9 @@ plot(fit_2, which = 1, las = 1, )
 
 ### Part c
 
-The slope coefficient from the model in b is 15,34. The interpretation of this
-coefficient is a difference of 1% in nitrix oxide levels is associated with an
-(approximate) positive difference of .1534% in mortality rate.
+The slope coefficient from the model in b is 15.34. The interpretation of this
+coefficient is a difference of 1% in nitric oxide levels is associated with an
+(approximate) positive difference of .1534% in mortality rate on average.
 
 
 ### Part d
@@ -93,12 +93,12 @@ dioxide and hydrocarbons, I ran a linear regression on mortality rate vs. each
 variable and mortality rate vs. each log variable and compared the scatter plots
 and residual plots. 
 
-The graphs below show the scatter plots for both the non log so2 and hc variables as well as the log verison of each variable. It looks like a logarithmic transformation might be a better for for both of these variables based on their scatterplots. I will confirm this by looking at the residual plots for each variable. 
+The graphs below show the scatter plots for both the non log so2 and hc
+variables as well as the log verison of each variable. It looks like a
+logarithmic transformation might be a better fit for for both of these variables
+based on their scatterplots. I will confirm this by looking at the residual
+plots for each variable.
 
-The residual plot for the variable follows the scatterplot.
-For both hc and so2, the log version of the regression produces residuals that
-appear more randomly distributed, especially for hc. So, I decided to use the
-log version of both so2 and hc in my regression.
 ```{r 4d}
 
 # creating logged versions of the variables
@@ -318,7 +318,7 @@ underestimated.
 
 Additionally, the Mean Squared Error of the predictions is .004, which is hard
 to interpret on its own without conparisonns to other models, but also seems
-very small to me.
+very small to me. Thus, I think the model performed well cross-validation wise. 
 
 
 ```{r 4e_b}
@@ -343,6 +343,8 @@ MSE <- sum(pred_df$sq_error) / nrow(pred_df)
 
 ## Question 8
 
+
+
 ```{r 8a, include=FALSE}
 
 # reading in the data for the problem. Need to fit regressions predicting
@@ -355,10 +357,12 @@ beauty <- read.csv("http://www.stat.columbia.edu/~gelman/arm/examples/beauty/Pro
                    header = TRUE)
 ```
 
+For this question, I decided to start by looking at the scatter plot and
+regression of course evaluations vs the beauty standard deviation score. From
+the scatter plot and residual plot, it appears than linear regression is a good
+fit for the data.
 
-
-```{r 8_b}
-
+```{r 8b}
 # looking at btystdave. The residuals seem to be clustered more toward the
 # minimum of the range.
 
@@ -369,7 +373,23 @@ bty_plot <- ggplot(beauty, aes(x = btystdave, y = courseevaluation)) +
   labs(title = "Evaluations vs btystdave") +
   theme_classic()
 
+bty_plot
 plot(fit_bty, which = 1, las = 1, )
+```
+
+
+I think decided to look at the age ("age") and class enrollment ("student")
+variables to add to the model. I looked at the scatter plots and residual plots
+of course evaluations vs each variable to determine whether or not a linear
+model would be a good fit.
+
+### course evaluation vs age
+
+The plots below suggest that the variables may not have any relationship,
+however, I will still look at the variable in variations of my final model. The
+data does not appear to need to be transformed.
+
+```{r 8c}
 
 # looking at age. I see quadratic transformations happen with age a lot, so
 # maybe I should try it
@@ -381,7 +401,18 @@ age_plot <- ggplot(beauty, aes(x = age, y = courseevaluation)) +
   labs(title = "Evaluations vs age") +
   theme_classic()
 
+age_plot
 plot(fit_age, which = 1, las = 1, )
+
+```
+
+### course evaluations  vs student
+
+The plots below suggest that a linear model may not be a good fit for the data.
+The residuals are clustered towards the end of the range and are not random. I
+will try a logarithmic transformation to see if it is a better fit.
+
+```{r  8d}
 
 # looking at class enrollment with prediction that smaller classes have better
 # evaluations. I should definitely try logarithmic transformation here.
@@ -393,7 +424,16 @@ students_plot <- ggplot(beauty, aes(x = students, y = courseevaluation)) +
   labs(title = "Evaluations vs enrollment") +
   theme_classic()
 
+students_plot
 plot(fit_students, which = 1, las = 1, )
+
+```
+
+The plots below suggest that the logarithmic model is a fit for the data: the
+residuals are more randomly distributed and not clustered. So, I will use the
+log version of student in the variations of my final model.
+
+```{r 8e}
 
 # creating a logged version of beauty
 
@@ -407,8 +447,31 @@ students_plot_log <- ggplot(beauty, aes(x = logstudents, y = courseevaluation)) 
   labs(title = "Evaluations vs log(enrollment)") +
   theme_classic()
 
+students_plot_log
 plot(fit_students_log, which = 1, las = 1, )
+
 ```
+
+
+
+### Model variations
+
+In addition to the btysdave, age, and log(student) variables, I will also
+consider the binary variables of "female" and "minority." The female variable is
+1 if the teacher is female and the minority variable is 1 if the teacher is a
+minority. Both are 0 otherwise.
+
+I considered 3 different models. The first (1) regressed courseevaluation
+against all of the variables discussed above with no interactions. The second
+(2) regressed courseevaluation against all of the variables except for age with
+an interaction between female and btystdave, because, as I noted above, it
+didn't look like age and courseevaluations had a significant relationship in the
+plots above. I chose to consider the interaction between  female and btystdave
+because in my mind physical attractiveness is more important for women than it
+is for men.The last model (3) regressed courseevaluation against btstdave,
+logstudents, female, and an interaction between btystdave and female. I chose to
+not include the minority variable because it was not statistically significant
+in model 2 (see below).
 
 ```{r 8_c, results = "asis"}
 
@@ -425,11 +488,37 @@ fit_int <- lm(courseevaluation ~ btystdave*female  + logstudents + female + mino
 fit_int_no_min <- lm(courseevaluation ~ btystdave*female  + logstudents + female,
               data =  beauty)
 
-stargazer(fit_all, fit_int, fit_int_no_min, type = "text")
+stargazer(fit_all, fit_int, fit_int_no_min, type = "latex")
 
 
 
 ```
+
+
+### Model choice
+
+Model 1: As I expected, the age variable is not statistically significant. The r
+squared for the model is .095, meaning that the model accounts for about 9.5% of
+variation in the response variables
+
+Model 2:  All of the coefficients are statistically significant except for the
+minority coefficient. The r squared is .097, meaning that the model accounts for
+about 9.7% of the variation in the response variables.
+
+Model 3: All of the coefficients are statistically significant. The r squared is
+.093, meaning that the model accounts for  about 9.3% of the variation in the
+response variables.
+
+After considering the above factors, I choose Model 2 based on the fact that it
+has the highest R squared value and it also seems logical to me to include the
+minority variable even though it wasn't statistically significant. Also, it
+seems like dropping it in Model 3 decreased the model's explanatory power.
+
+
+
+
+
+
 
 
 
