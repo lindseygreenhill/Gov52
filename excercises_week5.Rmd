@@ -16,7 +16,7 @@ pollution <- foreign::read.dta("http://www.stat.columbia.edu/~gelman/arm/example
 
 excercises 4.4 and 4.8
 
-## Question 3
+## Question 4
 
 ### Part a
 
