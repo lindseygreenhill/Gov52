@@ -1,0 +1,61 @@
+---
+title: "exercises_week6"
+author: "Lindsey Greenhill"
+date: "3/3/2021"
+output: pdf_document
+---
+
+Exercises 5.1, 5.4
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(arm)
+library(tidyverse)
+
+
+df <- foreign::read.dta("http://www.stat.columbia.edu/~gelman/arm/examples/nes/nes5200_processed_voters_realideo.dta") %>%
+  filter(year == 1992)
+
+
+df_clean <- df %>%
+    select(presvote_2party,
+         gender, 
+         educ1,
+         partyid3,
+         ideo,
+         race,
+         income) %>%
+  drop_na() %>%
+  mutate(presvote_2party = str_sub(presvote_2party, 1, 1),
+         gender = as.numeric(str_sub(gender, 1, 1)) - 1,
+         educ1 = as.double(str_sub(educ1, 1, 1)),
+         partyid3 = as_factor(str_sub(partyid3, 1, 1)),
+         income = as.double(str_sub(income, 1, 1)),
+         ideo = as_factor(str_sub(ideo, 1, 1)),
+         race = as_factor(str_sub(race, 1, 1))) %>%
+  mutate(bush_vote = as.double(presvote_2party) - 1) %>%
+  select(-presvote_2party)
+  
+```
+
+## Question 1
+
+### Part a
+
+```{r 1_a}
+mod <- glm(bush_vote ~ gender + educ1 + partyid3 + ideo + race + income, data =  df_clean,
+    family = "binomial")
+
+mod_2 <- glm(bush_vote ~ gender + educ1 + partyid3 + ideo + race + income:gender, data =  df_clean,
+    family = "binomial")
+
+mod_3 <- glm(bush_vote ~ gender + educ1 + partyid3 + ideo + race + educ1:gender, data =  df_clean,
+    family = "binomial")
+
+
+summary(mod)
+summary(mod_2)
+summary(mod_3)
+
+```
+
