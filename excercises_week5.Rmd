@@ -330,7 +330,9 @@ pred_df %>%
   geom_point() +
   geom_abline(slope = 1, intercept = 0, col = "red") +
   labs(title = "Predicted vs Actual logmort",
-       subtitle = "Line at predictions = logmort") +
+       subtitle = "Line at predictions = logmort",
+       x = "logmort",
+       y = "predicted logmort") +
   theme_classic()
 
 # calculating MSE
@@ -363,6 +365,7 @@ the scatter plot and residual plot, it appears than linear regression is a good
 fit for the data.
 
 ```{r 8b}
+
 # looking at btystdave. The residuals seem to be clustered more toward the
 # minimum of the range.
 
@@ -468,7 +471,7 @@ an interaction between female and btystdave, because, as I noted above, it
 didn't look like age and courseevaluations had a significant relationship in the
 plots above. I chose to consider the interaction between  female and btystdave
 because in my mind physical attractiveness is more important for women than it
-is for men.The last model (3) regressed courseevaluation against btstdave,
+is for men.The last model (3) regressed course evaluation against btstdave,
 logstudents, female, and an interaction between btystdave and female. I chose to
 not include the minority variable because it was not statistically significant
 in model 2 (see below).
