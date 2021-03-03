@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2021.2.14)  1 MAR 2021 21:18
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2021.2.14)  2 MAR 2021 19:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -552,7 +552,7 @@ File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 134.
-<excercises_week5_files/figure-latex/4a-1.pdf, id=48, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/4a-1.pdf, id=52, 469.755pt x 325.215pt>
 File: excercises_week5_files/figure-latex/4a-1.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/4a-1.pdf>
 Package pdftex.def Info: excercises_week5_files/figure-latex/4a-1.pdf  used on 
@@ -562,14 +562,14 @@ input line 144.
 
 {/Users/lindseygreenhill/Library/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdft
 ex.map}]
-<excercises_week5_files/figure-latex/4a-2.pdf, id=64, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/4a-2.pdf, id=68, 469.755pt x 325.215pt>
 File: excercises_week5_files/figure-latex/4a-2.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/4a-2.pdf>
 Package pdftex.def Info: excercises_week5_files/figure-latex/4a-2.pdf  used on 
 input line 158.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [2 <./excercises_week5_files/figure-latex/4a-1.pdf>]
-<excercises_week5_files/figure-latex/unnamed-chunk-1-1.pdf, id=74, 469.755pt x 
+<excercises_week5_files/figure-latex/unnamed-chunk-1-1.pdf, id=78, 469.755pt x 
 325.215pt>
 File: excercises_week5_files/figure-latex/unnamed-chunk-1-1.pdf Graphic file (t
 ype pdf)
@@ -579,14 +579,14 @@ pdf  used on input line 187.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [3 <./excercises_week5_files/figure-latex/4a-2.pdf>] [4 <./excercises_week5_fil
 es/figure-latex/unnamed-chunk-1-1.pdf>]
-<excercises_week5_files/figure-latex/4d-1.pdf, id=96, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/4d-1.pdf, id=100, 469.755pt x 325.215pt>
 File: excercises_week5_files/figure-latex/4d-1.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/4d-1.pdf>
 Package pdftex.def Info: excercises_week5_files/figure-latex/4d-1.pdf  used on 
 input line 263.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [5]
-<excercises_week5_files/figure-latex/4_res_1-1.pdf, id=101, 469.755pt x 325.215
+<excercises_week5_files/figure-latex/4_res_1-1.pdf, id=105, 469.755pt x 325.215
 pt>
 File: excercises_week5_files/figure-latex/4_res_1-1.pdf Graphic file (type pdf)
 
@@ -594,7 +594,7 @@ File: excercises_week5_files/figure-latex/4_res_1-1.pdf Graphic file (type pdf)
 Package pdftex.def Info: excercises_week5_files/figure-latex/4_res_1-1.pdf  use
 d on input line 288.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-<excercises_week5_files/figure-latex/4_res_1-2.pdf, id=102, 469.755pt x 325.215
+<excercises_week5_files/figure-latex/4_res_1-2.pdf, id=106, 469.755pt x 325.215
 pt>
 File: excercises_week5_files/figure-latex/4_res_1-2.pdf Graphic file (type pdf)
 
@@ -609,7 +609,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 288--290
 
 [6 <./excercises_week5_files/figure-latex/4d-1.pdf>] [7 <./excercises_week5_fil
 es/figure-latex/4_res_1-1.pdf>]
-<excercises_week5_files/figure-latex/4_res_2-1.pdf, id=122, 469.755pt x 325.215
+<excercises_week5_files/figure-latex/4_res_2-1.pdf, id=126, 469.755pt x 325.215
 pt>
 File: excercises_week5_files/figure-latex/4_res_2-1.pdf Graphic file (type pdf)
 
@@ -617,7 +617,7 @@ File: excercises_week5_files/figure-latex/4_res_2-1.pdf Graphic file (type pdf)
 Package pdftex.def Info: excercises_week5_files/figure-latex/4_res_2-1.pdf  use
 d on input line 305.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-<excercises_week5_files/figure-latex/4_res_2-2.pdf, id=123, 469.755pt x 325.215
+<excercises_week5_files/figure-latex/4_res_2-2.pdf, id=127, 469.755pt x 325.215
 pt>
 File: excercises_week5_files/figure-latex/4_res_2-2.pdf Graphic file (type pdf)
 
@@ -632,7 +632,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 305--307
 
 [8 <./excercises_week5_files/figure-latex/4_res_1-2.pdf>] [9 <./excercises_week
 5_files/figure-latex/4_res_2-1.pdf>]
-<excercises_week5_files/figure-latex/4d_b-1.pdf, id=142, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/4d_b-1.pdf, id=146, 469.755pt x 325.215pt>
 
 File: excercises_week5_files/figure-latex/4d_b-1.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/4d_b-1.pdf>
@@ -640,7 +640,7 @@ Package pdftex.def Info: excercises_week5_files/figure-latex/4d_b-1.pdf  used o
 n input line 328.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [10 <./excercises_week5_files/figure-latex/4_res_2-2.pdf>]
-<excercises_week5_files/figure-latex/4d_b-2.pdf, id=152, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/4d_b-2.pdf, id=156, 469.755pt x 325.215pt>
 
 File: excercises_week5_files/figure-latex/4d_b-2.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/4d_b-2.pdf>
@@ -648,7 +648,7 @@ Package pdftex.def Info: excercises_week5_files/figure-latex/4d_b-2.pdf  used o
 n input line 336.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [11 <./excercises_week5_files/figure-latex/4d_b-1.pdf>]
-<excercises_week5_files/figure-latex/4d_c-1.pdf, id=163, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/4d_c-1.pdf, id=167, 469.755pt x 325.215pt>
 
 File: excercises_week5_files/figure-latex/4d_c-1.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/4d_c-1.pdf>
@@ -657,7 +657,7 @@ n input line 365.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [12 <./excercises_week5_files/figure-latex/4d_b-2.pdf>] [13 <./excercises_week5
 _files/figure-latex/4d_c-1.pdf>]
-<excercises_week5_files/figure-latex/4d_d-1.pdf, id=183, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/4d_d-1.pdf, id=187, 469.755pt x 325.215pt>
 
 File: excercises_week5_files/figure-latex/4d_d-1.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/4d_d-1.pdf>
@@ -671,7 +671,7 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 424.
 [14 <./excercises_week5_files/figure-latex/4d_d-1.pdf>] [15]
-<excercises_week5_files/figure-latex/4e_b-1.pdf, id=204, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/4e_b-1.pdf, id=208, 469.755pt x 325.215pt>
 
 File: excercises_week5_files/figure-latex/4e_b-1.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/4e_b-1.pdf>
@@ -679,55 +679,55 @@ Package pdftex.def Info: excercises_week5_files/figure-latex/4e_b-1.pdf  used o
 n input line 520.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [16 <./excercises_week5_files/figure-latex/4e_b-1.pdf>]
-<excercises_week5_files/figure-latex/8b-1.pdf, id=215, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/8b-1.pdf, id=219, 469.755pt x 325.215pt>
 File: excercises_week5_files/figure-latex/8b-1.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/8b-1.pdf>
 Package pdftex.def Info: excercises_week5_files/figure-latex/8b-1.pdf  used on 
 input line 557.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-<excercises_week5_files/figure-latex/8b-2.pdf, id=216, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/8b-2.pdf, id=220, 469.755pt x 325.215pt>
 File: excercises_week5_files/figure-latex/8b-2.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/8b-2.pdf>
 Package pdftex.def Info: excercises_week5_files/figure-latex/8b-2.pdf  used on 
 input line 565.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [17 <./excercises_week5_files/figure-latex/8b-1.pdf>]
-<excercises_week5_files/figure-latex/8c-1.pdf, id=226, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/8c-1.pdf, id=230, 469.755pt x 325.215pt>
 File: excercises_week5_files/figure-latex/8c-1.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/8c-1.pdf>
 Package pdftex.def Info: excercises_week5_files/figure-latex/8c-1.pdf  used on 
 input line 596.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [18 <./excercises_week5_files/figure-latex/8b-2.pdf>]
-<excercises_week5_files/figure-latex/8c-2.pdf, id=237, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/8c-2.pdf, id=241, 469.755pt x 325.215pt>
 File: excercises_week5_files/figure-latex/8c-2.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/8c-2.pdf>
 Package pdftex.def Info: excercises_week5_files/figure-latex/8c-2.pdf  used on 
 input line 604.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [19 <./excercises_week5_files/figure-latex/8c-1.pdf>]
-<excercises_week5_files/figure-latex/8d-1.pdf, id=248, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/8d-1.pdf, id=252, 469.755pt x 325.215pt>
 File: excercises_week5_files/figure-latex/8d-1.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/8d-1.pdf>
 Package pdftex.def Info: excercises_week5_files/figure-latex/8d-1.pdf  used on 
 input line 631.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [20 <./excercises_week5_files/figure-latex/8c-2.pdf>]
-<excercises_week5_files/figure-latex/8d-2.pdf, id=259, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/8d-2.pdf, id=263, 469.755pt x 325.215pt>
 File: excercises_week5_files/figure-latex/8d-2.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/8d-2.pdf>
 Package pdftex.def Info: excercises_week5_files/figure-latex/8d-2.pdf  used on 
 input line 639.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [21 <./excercises_week5_files/figure-latex/8d-1.pdf>]
-<excercises_week5_files/figure-latex/8e-1.pdf, id=269, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/8e-1.pdf, id=273, 469.755pt x 325.215pt>
 File: excercises_week5_files/figure-latex/8e-1.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/8e-1.pdf>
 Package pdftex.def Info: excercises_week5_files/figure-latex/8e-1.pdf  used on 
 input line 664.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [22 <./excercises_week5_files/figure-latex/8d-2.pdf>]
-<excercises_week5_files/figure-latex/8e-2.pdf, id=279, 469.755pt x 325.215pt>
+<excercises_week5_files/figure-latex/8e-2.pdf, id=283, 469.755pt x 325.215pt>
 File: excercises_week5_files/figure-latex/8e-2.pdf Graphic file (type pdf)
 <use excercises_week5_files/figure-latex/8e-2.pdf>
 Package pdftex.def Info: excercises_week5_files/figure-latex/8e-2.pdf  used on 
@@ -739,13 +739,13 @@ iles/figure-latex/8e-2.pdf>] [25] [26] (./excercises_week5.aux)
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `excercises_week5.out' has not changed.
-(rerunfilecheck)             Checksum: 17C34234A4559F5D1CE092A86264FACB;1278.
+(rerunfilecheck)             Checksum: 9A65034F7F036394CF2A8DD9E91B0561;1536.
  ) 
 Here is how much of TeX's memory you used:
- 10602 strings out of 481288
- 159623 string characters out of 5915561
- 453080 words of memory out of 5000000
- 27252 multiletter control sequences out of 15000+600000
+ 10606 strings out of 481288
+ 159725 string characters out of 5915561
+ 453143 words of memory out of 5000000
+ 27254 multiletter control sequences out of 15000+600000
  447937 words of font info for 67 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  71i,10n,74p,374b,361s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -768,10 +768,10 @@ seygreenhill/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy7.pfb></Users
 /Users/lindseygreenhill/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt10
 .pfb></Users/lindseygreenhill/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/
 lmtti10.pfb>
-Output written on excercises_week5.pdf (26 pages, 571304 bytes).
+Output written on excercises_week5.pdf (26 pages, 573752 bytes).
 PDF statistics:
- 371 PDF objects out of 1000 (max. 8388607)
- 285 compressed objects within 3 object streams
- 51 named destinations out of 1000 (max. 500000)
- 194 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 376 PDF objects out of 1000 (max. 8388607)
+ 290 compressed objects within 3 object streams
+ 53 named destinations out of 1000 (max. 500000)
+ 202 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -514,6 +514,32 @@ has the highest R squared value and it also seems logical to me to include the
 minority variable even though it wasn't statistically significant. Also, it
 seems like dropping it in Model 3 decreased the model's explanatory power.
 
+### Interpretation of Model 2 coefficients
+
+The slope coefficient for btystdave is .21. In context, this means that an
+increase in 1 standard deviation in beauty score is associated with a .21
+increase in course evaluation score on average, holding all other variables
+constant.
+The slope coefficient for logstudents is -.098. In context, this means that an
+increase in 1% in students is associated with a negative difference of .00098%
+in course evaluation score on average, holding all other variables constant.
+The slope coefficient for female is -.205. In context, this means that being
+female is associated with a negative difference of .205 in course evaluation
+score on average, holding all other variables constant.
+The slope coefficient for minority is -.106. In context, this means that being a
+minority is associated with a negative difference of .106 in course evaluation
+score on average, holding all other variables constant.
+The slope coefficient for the interaction between btystdave and female is -.116.
+In context, this means that an increase in one standard deviation in beauty
+score has an additional -.116 decrease on course evaluation score when the
+teacher is female, on average holding all other variables constant.
+The intercept is 4.469. In context, this means that a teacher who has an average
+beauty score, has no students, is male and is not a minority has an average
+course evaluation score of 4.469. However, because all of the students have
+students, this isn't a logical scenario.
+
+
+
 
 
 
