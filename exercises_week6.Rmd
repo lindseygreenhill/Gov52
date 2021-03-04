@@ -10,19 +10,22 @@ Exercises 5.1, 5.4
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(arm)
+library(stargazer)
+library(performance)
 library(tidyverse)
 
 
 df <- foreign::read.dta("http://www.stat.columbia.edu/~gelman/arm/examples/nes/nes5200_processed_voters_realideo.dta") %>%
   filter(year == 1992)
 
+# cleaning the data. Have to do the substring
 
 df_clean <- df %>%
     select(presvote_2party,
          gender, 
          educ1,
          partyid3,
-         ideo,
+         ideo7,
          race,
          income) %>%
   drop_na() %>%
@@ -31,10 +34,12 @@ df_clean <- df %>%
          educ1 = as.double(str_sub(educ1, 1, 1)),
          partyid3 = as_factor(str_sub(partyid3, 1, 1)),
          income = as.double(str_sub(income, 1, 1)),
-         ideo = as_factor(str_sub(ideo, 1, 1)),
+         ideo7 = as.double(str_sub(ideo7, 1, 1)),
          race = as_factor(str_sub(race, 1, 1))) %>%
   mutate(bush_vote = as.double(presvote_2party) - 1) %>%
-  select(-presvote_2party)
+  select(-presvote_2party) %>%
+  mutate(partyid3 = if_else(partyid3 == 3, "R",
+                            if_else(partyid3 == 2, "I", "D")))
   
 ```
 
@@ -42,20 +47,51 @@ df_clean <- df %>%
 
 ### Part a
 
-```{r 1_a}
-mod <- glm(bush_vote ~ gender + educ1 + partyid3 + ideo + race + income, data =  df_clean,
+```{r 1_a,results="asis"}
+
+# model 1 is a regression of bush vote vs gender, education, party, ideology,
+# race, and income
+
+mod_1 <- glm(bush_vote ~ educ1 + partyid3 + ideo7 + income, data =  df_clean,
     family = "binomial")
 
-mod_2 <- glm(bush_vote ~ gender + educ1 + partyid3 + ideo + race + income:gender, data =  df_clean,
+mod_2 <- glm(bush_vote ~ educ1 + partyid3 + ideo7 + income + race + gender, data =  df_clean,
     family = "binomial")
 
-mod_3 <- glm(bush_vote ~ gender + educ1 + partyid3 + ideo + race + educ1:gender, data =  df_clean,
+# model 2 is a regression of bush vote vs gender, education, party, ideology,
+# race, and an interaction between income and gender
+
+mod_3 <- glm(bush_vote ~ gender + educ1 + partyid3 + ideo7 + race + income + income:gender,
+             data =  df_clean,
     family = "binomial")
 
+# model 3 is a regression of bush vote vs gender, education, party, ideology,
+# race, and an interaction between education and gender. I took out income
+# because it wasn't statistically significant in the past 2 models.
 
-summary(mod)
-summary(mod_2)
-summary(mod_3)
+mod_4 <- glm(bush_vote ~ gender + educ1 + partyid3 + ideo7 + race + educ1:gender,
+             data =  df_clean,
+    family = "binomial")
+
+# regression table
+
+stargazer(mod_1, mod_2, mod_3, mod_4, type = "text")
+
+# showing the null and residual deviances. The Residual Dev in lowest for model 3. Well first should point out that they are all super close 
+
+an <- anova(mod_1, mod_2, mod_3, mod_4)
+
+tibble("Model" = c("mod_1", "mod_2", "mod_3", "mod_4"),
+       "Null Dev" = 1534.1,
+       "Resid. Dev" = an$"Resid. Dev")
+
+# looking at binned residual plots
+
+binned_residuals(mod_1)
+binned_residuals(mod_2)
+binned_residuals(mod_3)
+binned_residuals(mod_4)
+
 
 ```
 
