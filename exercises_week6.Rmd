@@ -7,6 +7,8 @@ output: pdf_document
 
 Exercises 5.1, 5.4
 
+## Question 1
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(arm)
@@ -14,32 +16,46 @@ library(stargazer)
 library(performance)
 library(tidyverse)
 
+# reading the data in and filtering to 1992
 
-df <- foreign::read.dta("http://www.stat.columbia.edu/~gelman/arm/examples/nes/nes5200_processed_voters_realideo.dta") %>%
+df <-
+  foreign::read.dta(
+    "http://www.stat.columbia.edu/~gelman/arm/examples/nes/nes5200_processed_voters_realideo.dta"
+  ) %>%
   filter(year == 1992)
 
-# cleaning the data. Have to do the substring
+# cleaning the data. Need to use substring because all of the factor variables
+# have labels with them. I'm also changing some of them to numerical variables
+# to make the interpretation of coefficients easier. I am also recoding some
+# values like partyid to R, I, or D to make results easier to look at.
 
 df_clean <- df %>%
-    select(presvote_2party,
-         gender, 
+  select(presvote_2party,
+         gender,
          educ1,
          partyid3,
          ideo7,
          race,
          income) %>%
   drop_na() %>%
-  mutate(presvote_2party = str_sub(presvote_2party, 1, 1),
-         gender = as.numeric(str_sub(gender, 1, 1)) - 1,
-         educ1 = as.double(str_sub(educ1, 1, 1)),
-         partyid3 = as_factor(str_sub(partyid3, 1, 1)),
-         income = as.double(str_sub(income, 1, 1)),
-         ideo7 = as.double(str_sub(ideo7, 1, 1)),
-         race = as_factor(str_sub(race, 1, 1))) %>%
+  mutate(
+    presvote_2party = str_sub(presvote_2party, 1, 1),
+    gender = as.numeric(str_sub(gender, 1, 1)) - 1,
+    educ1 = as.double(str_sub(educ1, 1, 1)),
+    partyid3 = as_factor(str_sub(partyid3, 1, 1)),
+    income = as.double(str_sub(income, 1, 1)),
+    ideo7 = as.double(str_sub(ideo7, 1, 1)),
+    race = as_factor(str_sub(race, 1, 1))
+  ) %>%
   mutate(bush_vote = as.double(presvote_2party) - 1) %>%
   select(-presvote_2party) %>%
   mutate(partyid3 = if_else(partyid3 == 3, "R",
-                            if_else(partyid3 == 2, "I", "D")))
+                            if_else(partyid3 == 2, "I", "D"))) %>%
+  mutate(race = case_when(race == 1 ~ "white",
+                          race == 2 ~ "black",
+                          race == 3 ~ "asian",
+                          race == 4 ~ "native_american",
+                          race == 5 ~ "hispanic"))
   
 ```
 
@@ -47,43 +63,115 @@ df_clean <- df %>%
 
 ### Part a
 
-```{r 1_a,results="asis"}
+I created 4 logistic models of presidential preference vs multiple independent variables.
+
+ - mod_1 is a logistic model of bush_vote vs. education level, party identification, ideology, and income.
+
+ - mod_2 is a logistic model of bush_vote vs. education level, party identification, ideology, income,
+race, and gender.
+
+ - mod_3 is a logistic model of bush_vote vs. education level, party identification, ideology, income,
+race, gender, and an interaction between income and gender.
+
+ - mod_4 is a logistic model of bush_vote vs. education level, party identification, ideology,
+race, gender, and an interaction between education and gender.
+
+The table below shows the results of these models. 
+
+```{r 1_a,results="asis", message=FALSE}
 
 # model 1 is a regression of bush vote vs gender, education, party, ideology,
 # race, and income
 
-mod_1 <- glm(bush_vote ~ educ1 + partyid3 + ideo7 + income, data =  df_clean,
-    family = "binomial")
+mod_1 <-
+  glm(bush_vote ~ educ1 + partyid3 + ideo7 + income,
+      data =  df_clean,
+      family = "binomial")
 
-mod_2 <- glm(bush_vote ~ educ1 + partyid3 + ideo7 + income + race + gender, data =  df_clean,
-    family = "binomial")
-
-# model 2 is a regression of bush vote vs gender, education, party, ideology,
-# race, and an interaction between income and gender
-
-mod_3 <- glm(bush_vote ~ gender + educ1 + partyid3 + ideo7 + race + income + income:gender,
-             data =  df_clean,
-    family = "binomial")
+mod_2 <-
+  glm(
+    bush_vote ~ educ1 + partyid3 + ideo7 + income + race + gender,
+    data =  df_clean,
+    family = "binomial"
+  )
 
 # model 3 is a regression of bush vote vs gender, education, party, ideology,
+# race, and an interaction between income and gender
+
+mod_3 <-
+  glm(
+    bush_vote ~ gender + educ1 + partyid3 + ideo7 + race + income + income:gender,
+    data =  df_clean,
+    family = "binomial"
+  )
+
+# model 4 is a regression of bush vote vs gender, education, party, ideology,
 # race, and an interaction between education and gender. I took out income
 # because it wasn't statistically significant in the past 2 models.
 
-mod_4 <- glm(bush_vote ~ gender + educ1 + partyid3 + ideo7 + race + educ1:gender,
-             data =  df_clean,
-    family = "binomial")
+mod_4 <-
+  glm(
+    bush_vote ~ gender + educ1 + partyid3 + ideo7 + race + educ1:gender,
+    data =  df_clean,
+    family = "binomial"
+  )
 
 # regression table
 
 stargazer(mod_1, mod_2, mod_3, mod_4, type = "text")
 
-# showing the null and residual deviances. The Residual Dev in lowest for model 3. Well first should point out that they are all super close 
+
+```
+
+### Part b: model choice
+
+### Coefficient estimates
+
+- the education variable (educ1)is a 4 point scale of education (going from less
+education to more education). the education coefficient is positive and
+relatively similar in all 4 models (.124, .174, .174, .163), however, it is not
+statistically significant in any model.
+
+- the party identification factor variable (partyid3) is statistically
+significant. The coefficient for the Independents are positive and similar
+across all models and is also statistically significant. The coefficient for the
+Republicans are positive and similar across all models and is also statistically
+significant. Without interpreting the specific coefficients, both of these
+coefficients mean that Independents and Republicans are more likely to vote for
+bush than Democrats. This effect is much larger than the education effect.
+
+- the ideology variable (ideo7) is a 7 point scale of ideology (from very
+liberal to very conservative). It is positive and relatively similar across all
+4 models and statistically significant. It has less of an effect compared to
+party identification but more of an effect than education.
+
+- the income variable (income) is a 5 point scale of incomes. the income
+coefficient is positive but very small in models 1, 2, and 3 and is not
+statistically significant (which is why I didn't use it in model 4).
+
+- the race factor variable (race) have 5 levels, with the model setting asian as
+the base level. The variable was only used in models 2,3, and 4. It is negative
+and statistically significant in these three models, meaning that black
+respondents were less likely to vote for bush. The hispanic, native_american,
+and white coefficients were not statistically significant.
+
+- the gender variable (gender) coefficient is used in models 2, 3, and 4. It is
+positive in all 3 models but only statistically significant in model 2. It's
+effects are largest in model 3 (but again it is not statistically significant)
+and smallest in model 4.
+
+```{r 1_b, echo=FALSE}
+
+# showing the null and residual deviances. The Residual Dev in lowest for model
+# 3. Well first should point out that they are all super close
 
 an <- anova(mod_1, mod_2, mod_3, mod_4)
 
-tibble("Model" = c("mod_1", "mod_2", "mod_3", "mod_4"),
-       "Null Dev" = 1534.1,
-       "Resid. Dev" = an$"Resid. Dev")
+tibble(
+  "Model" = c("mod_1", "mod_2", "mod_3", "mod_4"),
+  "Null Dev" = 1534.1,
+  "Resid. Dev" = an$"Resid. Dev"
+)
 
 # looking at binned residual plots
 
@@ -92,6 +180,107 @@ binned_residuals(mod_2)
 binned_residuals(mod_3)
 binned_residuals(mod_4)
 
+```
+
+
+## Question 4
+
+```{r 4_data}
+
+# Data from Sands, Melissa L. 2017. "[Exposure to inequality affects
+# redistribution.](http://dx.doi.org/10.1073/pnas.1615010113)" *Proceedings of
+# the National Academy of Sciences*, 114(4): 663-668 from gov51 pset 4. The
+# paper analyzed an experiment designed to test whether exposure to poverty
+# generated more support for redistribution policy. In the experiment, an actor
+# dressed as either a impoverished person or an affluent person was positioned
+# around a person asking people to sign a petition to enact the millionaire's
+# tax (a tax that would theoretically tax affluent Americans more).
+
+
+ineq_df <- read.csv("inequality-exposure.csv")
+                                                        
+#|:-------------|:-------------------------------------------------------------------------|
+#| `signed`     | 1 if the respondent signed the petition, 0 otherwise                     |
+#| `mill_tax`   | 1 if petitioned about the millionaire's tax, 0 for plastic bag petition. |
+#| `blackactor` | 1 if actor was Black for this respondent, 0 for white                    |
+#| `pooractor`  | 1 if actor was in poverty condition, 0 for affluent condition            |
+#| `black`      | 1 if petitioner guessed respondent was Black                             |
+#| `white`      | 1 if petitioner guessed respondent was non-Hispanic white                |
+#| `asian`      | 1 if petitioner guessed respondent was Asian                             |
+#| `hisp`       | 1 if petitioner guessed respondent was Hispanic                          |
+#| `young`      | 1 if petitioner guessed respondent was 18-35 years old                   |
+#| `middle`     | 1 if petitioner guessed respondent was 36-65 years old                   |
+#| `old`        | 1 if petitioner guessed respondent was >65 years old                     |
+#| `female`     | 1 if petitioner guessed respondent was female                            |
+#| `clust`      | Cluster number of respondent (see question 6)                            |
+
+
+
+# changing the data to make the age variable continuous
+
+mill_df <- ineq_df %>%
+  filter(mill_tax == 1) %>%
+  mutate(age = case_when(young == 1 ~ 1,
+                         middle == 1 ~ 2,
+                         old == 1 ~ 3)) %>%
+  drop_na()
+```
+
+
+```{r 4_models}
+
+# model 1 looks at main treatment effect (the affluence or poverty of the actor).
+
+
+mod_4_1 <- glm(signed ~ pooractor, data = mill_df,
+               family = "binomial")
+
+# model 2 looks at signed vs pooractor and demographic info (race and age)
+
+mod_4_2 <-
+  glm(
+    signed ~ pooractor + blackactor + white + asian + hisp + age,
+    data = mill_df,
+    family = "binomial"
+  )
+
+# model 3 adds an interaction between age and female
+
+mod_4_3 <-
+  glm(
+    signed ~ pooractor + blackactor + white + asian + hisp + age:female,
+    data = mill_df,
+    family = "binomial"
+  )
+
+
+stargazer(mod_4_1, mod_4_2, mod_4_3, type = "text")
+
+# showing the null and residual deviances. The Residual Dev in lowest for model
+# 3. Well first should point out that they are all super close
+
+an_4 <- anova(mod_4_1, mod_4_2, mod_4_3)
+
+tibble(
+  "Model" = c("mod_4_1", "mod_4_2", "mod_4_3"),
+  "Null Dev" = c(720.5, 720.6, 720.5),
+  "Resid. Dev" = an_4$"Resid. Dev"
+)
+
+plot(y = mill_df$signed, x = mill_df$pooractor)
+
+mill_df %>%
+  ggplot(aes(x = pooractor, y = signed)) +
+  geom_jitter()
+
+
+
+binned_residuals(mod_4_1)
+binned_residuals(mod_4_2)
+binned_residuals(mod_4_3)
+
 
 ```
+
+
 
