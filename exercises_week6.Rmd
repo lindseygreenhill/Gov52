@@ -123,11 +123,11 @@ stargazer(mod_1, mod_2, mod_3, mod_4, type = "text")
 
 ```
 
-### Part b: model choice
+### Part b: model comparison
 
 ### Coefficient estimates
 
-- the education variable (educ1)is a 4 point scale of education (going from less
+- the education variable (educ1) is a 4 point scale of education (going from less
 education to more education). the education coefficient is positive and
 relatively similar in all 4 models (.124, .174, .174, .163), however, it is not
 statistically significant in any model.
@@ -160,6 +160,22 @@ positive in all 3 models but only statistically significant in model 2. It's
 effects are largest in model 3 (but again it is not statistically significant)
 and smallest in model 4.
 
+- the interaction between income and gender (-.075) in model 3 is relatively
+small and negative, suggesting that an increase iin ncome has a small additional
+negative effect on the probability of voting for Bush when gender = 1. However, it is not
+statisticaly significant.
+
+- the interaction between education and gender (.028) in model 4 is relatively
+small and positive, suggesting that an increase education has a small additional
+positive effect on the probability of voting for Bush when gender = 1. However, it is not
+statisticaly significant.
+
+### Deviances
+
+The table below shows the null and residual deviances for the four models. If a variable does not add explanatory power to the model, and is random noise, the deviance will decrease by 1 on average. If the variable is a good predictor, we expect the deviance to decrease by more than 1. A lower deviance means that the model is a better fit. 
+
+We see that the residual deviance for model 1 is significantly higher than the residual deviances of mdoels 2, 3, and 4. This means that adding race and gender to the model added significant explanatory power. However, the residual deviance for model_3 does not decrease by more than 1, meaning that the interaction term between income and gender does is not an informative predictive. Similarly, the residual deviance for model 4 does not change from that of model 2, meaning that the interaction term between gender and education is not an informative predictor and that income is not an informative predictor either (as I took it out in model 4). 
+
 ```{r 1_b, echo=FALSE}
 
 # showing the null and residual deviances. The Residual Dev in lowest for model
@@ -173,14 +189,84 @@ tibble(
   "Resid. Dev" = an$"Resid. Dev"
 )
 
-# looking at binned residual plots
-
-binned_residuals(mod_1)
-binned_residuals(mod_2)
-binned_residuals(mod_3)
-binned_residuals(mod_4)
-
 ```
+
+### Binned Residual Plots
+
+The binned residual plots divides the data into categories and plots the average residual vs the average fitted value for each category. The dotted lines shows a 2 standard-error bound. If the model is true, we would expect about 95% of the points to fall within the bounds. We would also expect no dramatic patterns to appear in the plot. (from the textbook).
+
+### Model 1: 
+
+```{r}
+binned_residuals(mod_1)
+```
+
+About 85% of the residuals are inside the error bounds for model 1
+
+### Model 2: 
+
+```{r}
+binned_residuals(mod_2)
+```
+
+About 85% of the residuals are inside the error bounds for model 2.
+
+### Model 3: 
+
+```{r}
+binned_residuals(mod_3)
+```
+
+About 82% of the residuals are inside the error bounds for model 3.
+
+### Model 4: 
+
+```{r}
+binned_residuals(mod_4)
+```
+
+About 74% of the residuals are inside the error bounds for model 4.
+
+
+### Part C: Model Choice
+
+I think model 2 is the best model because it has the lowest residual deviance and does not include interaction terms that do not add explanatory power. It also has the highest percentage of residuals within the error bounds between models 2, 3, and 4. 
+
+```{r, results = "asis}
+
+stargazer(mod_2, type = "latex")
+```
+
+### Coefficient interpretations
+
+* Constant term: $logit^{-1}(-4.846) = $
+The coefficient for educ1 is .174. In context, this means that a difference in 1 of education level corresponds with a .174 positive difference in the logit probability of voting for Bush. However, the intercept is an impossible condition, so I will not try and interpret the constant term.
+
+* Coefficient for educ 1: to quickly interpret the coefficient on the probability scale, we use the divide by 4 rule. Using this rule (.174/4 = .043), an increase of 1 in education is associated with a 4% positive difference in the probability of voting for Bush holding all else constant, on average. This coefficeint is not statistically significant.
+
+* Coefficient for partyid3I: to quickly interpret the coefficient on the probability scale, we use the divide by 4 rule. Using this rule (1.856/4 = .464), being an independent is associated with a 46% positive difference in the probability of voting for Bush holding all else constant, on average. This coefficient is statistically significant. 
+
+* Coefficient for partyid3R: to quickly interpret the coefficient on the probability scale, we use the divide by 4 rule. Using this rule (4.06/4 = 1.01), being a Republican is associated with a 100% positive difference in the probability of voting for Bush holding all else constant, on average. This coefficient is statistically significant. 
+
+* Coefficient for ideo7: to quickly interpret the coefficient on the probability scale, we use the divide by 4 rule. Using this rule (.481/4 = .12), an increase in 1 on the ideology scale (going from very liberal to very conservative) is associated with a 12% positive difference in the probability of voting for Bush, holding all else constant on average. This coefficient is statistically significant. 
+
+* Coefficient for income: to quickly interpret the coefficient on the probability scale, we use the divide by 4 rule. Using this rule (.013/4 = .003), an increase in 1 on the income scale is associated with a .03% positive difference in the probability of voting for Bush holding all else constant, on average. This coefficient is not statistically significant. 
+
+* Coefficient for raceblack: to quickly interpret the coefficient on the probability scale, we use the divide by 4 rule. Using this rule (-2.098/4 = .-.52), being black is associated with a 52% negative difference in the probability of voting for Bush holding all else constant, on average. This coefficient is statistically significant.
+
+* Coefficient for racehispanic: to quickly interpret the coefficient on the probability scale, we use the divide by 4 rule. Using this rule (.562/4 = .14), being hispanic is associated with a 14% positive difference in the probability of voting for Bush holding all else constant, on average. This coefficient is not statistically significant.
+
+* Coefficient for racenative_american: to quickly interpret the coefficient on the probability scale, we use the divide by 4 rule. Using this rule (.593/4 = .148), being native american is associated with a 14.8% positive difference in the probability of voting for Bush holding all else constant, on average. This coefficient is not statistically significant.
+
+* Coefficient for racewhite: to quickly interpret the coefficient on the probability scale, we use the divide by 4 rule. Using this rule (-.193/4 = -.048), being white is associated with a 5% negative difference in the probability of voting for Bush holding all else constant, on average. This coefficient is not statistically significant.
+
+* Coefficient for gender: to quickly interpret the coefficient on the probability scale, we use the divide by 4 rule. Using this rule (.408/4 = .1), being male is associated with a 10% positive difference in the probability of voting for Bush holding all else constant, on average. This coefficient is statistically significant.
+
+
+Of all of these variables, the republican indicator variable seems to have the most predictive power. The independent indicator variable and ideology variables also have a relatively large effect on the probability of voting for Bush. The income variable seems to have the least predictive power. Except for the raceblack variable, the race variables do not seem to have a large impact relative to the party and ideology variables (as they are not statistically significant). The gender variable also seems to have a significant impact, although its effect is not as large as party membership. Considering all of this information, party membership seems to be the most important variable in predicting Bush vote. 
+
+
+
 
 
 ## Question 4
@@ -224,6 +310,8 @@ mill_df <- ineq_df %>%
                          middle == 1 ~ 2,
                          old == 1 ~ 3)) %>%
   drop_na()
+
+
 ```
 
 
@@ -275,10 +363,24 @@ mill_df %>%
 
 
 
+
 binned_residuals(mod_4_1)
 binned_residuals(mod_4_2)
 binned_residuals(mod_4_3)
 
+
+mean(mill_df$signed)
+
+# owen code
+
+predict <- predict(mod_4_3, mill_df, type = 'response')
+
+# Creating a confusion matrix.
+
+table_mat <- table(mill_df$signed, predict > 0.5)
+table_mat
+
+# page 99
 
 ```
 
