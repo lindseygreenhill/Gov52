@@ -59,7 +59,7 @@ df_clean <- df %>%
   
 ```
 
-## Question 1
+
 
 ### Part a
 
@@ -78,7 +78,7 @@ race, gender, and an interaction between education and gender.
 
 The table below shows the results of these models. 
 
-```{r 1_a,results="asis", message=FALSE}
+```{r 1_a, results="asis"}
 
 # model 1 is a regression of bush vote vs gender, education, party, ideology,
 # race, and income
@@ -118,10 +118,11 @@ mod_4 <-
 
 # regression table
 
-stargazer(mod_1, mod_2, mod_3, mod_4, type = "text")
-
+stargazer(mod_1, mod_2, mod_3, mod_4, type = "latex")
 
 ```
+
+
 
 ### Part b: model comparison
 
@@ -212,7 +213,7 @@ appear in the plot. (from the textbook).
 
 ### Model 1: 
 
-```{r}
+```{r, warning=FALSE}
 binned_residuals(mod_1)
 ```
 
@@ -220,7 +221,7 @@ About 85% of the residuals are inside the error bounds for model 1
 
 ### Model 2: 
 
-```{r}
+```{r, warning=FALSE}
 binned_residuals(mod_2)
 ```
 
@@ -228,7 +229,7 @@ About 85% of the residuals are inside the error bounds for model 2.
 
 ### Model 3: 
 
-```{r}
+```{r, warning=FALSE}
 binned_residuals(mod_3)
 ```
 
@@ -236,7 +237,7 @@ About 82% of the residuals are inside the error bounds for model 3.
 
 ### Model 4: 
 
-```{r}
+```{r, warning=FALSE}
 binned_residuals(mod_4)
 ```
 
@@ -250,10 +251,11 @@ and does not include interaction terms that do not add explanatory power. It
 also has the highest percentage of residuals within the error bounds between
 models 2, 3, and 4.
 
-```{r, results = "asis}
 
+```{r, results = "asis"}
 stargazer(mod_2, type = "latex")
 ```
+
 
 ### Coefficient interpretations
 
@@ -404,21 +406,30 @@ mill_df <- ineq_df %>%
 I created three different models of signed vs. a variety of independent
 variables.
 Independent variables:
+
 * pooractor: a variable that indicates whether or not the actor was dressed as
 poor or affluent
+
 * blackactor: a variable that indiciates whether or not the actor
+
 * black/white/asian/hisp: the race of the respondennt
+
 * female: the gender of the respondent
+
 * age: 1 if the respondent young, 2 if the respondent middle aged, 3 if the
 respondent old
+
 Models:
+
 * Model 1 is a model of signed vs. pooractor (a variable that indicates whether
 or not the actor was dressed as poor or affluent)
+
 * Model 2 is a model of signed vs. pooractor + blackactor
+
 * Model 3 is a model of signed vs. pooractor + blackactor + black + white +
 asian + hisp + female + age + age:female
 
-```{r 4_models}
+```{r 4_models, results = "asis"}
 
 # model 1 looks at main treatment effect (the affluence or poverty of the actor).
 
@@ -446,21 +457,6 @@ mod_4_3 <-
 
 
 stargazer(mod_4_1, mod_4_2, mod_4_3, type = "latex")
-
-
-
-mean(mill_df$signed)
-
-# owen code
-
-predict <- predict(mod_4_3, mill_df, type = 'response')
-
-# Creating a confusion matrix.
-
-table_mat <- table(mill_df$signed, predict > 0.5)
-table_mat
-
-# page 99
 
 ```
 
@@ -539,7 +535,9 @@ From these estimate, it seems like the respondents have a low probability of
 signing the petition whether or not they saw an affluent or poor actor.
 
 ```{r, results = "asis"}
-stargazer(mod_4_1, type = "text")
+
+stargazer(mod_4_1, type = "latex")
+
 ```
 
 ### Error Rate
@@ -548,10 +546,9 @@ The null error rate is the proportion of 1's in the data. In case, the null
 error rate is 7%, which means that very few respondents signed the survey in the
 study.
 
-The table below shows how the model classified each prediction. The model only
-predicted that respondents would not sign the survey and did not predict any
-successes. As such, the error rate is calculated by dividing the incorrectly
-classified observations (bottom) by the sum of all of the observations. In this
+The model only predicted that respondents would not sign the survey and did not predict any
+successes. It correctly predicted 1232 out of 1334 failures sign. As such, the error rate is calculated by dividing the incorrectly
+classified observations  by the sum of all of the observations. In this
 case, the error rate is equal to 7%, the same as the null error rate, suggesting
 that the model does not have any meaningful explanatory power.
 
@@ -560,8 +557,9 @@ null_error <- mean(mill_df$signed)
 
 error_rate <- predict(mod_4_1, mill_df, type = "response")
 
-tab_mat <- table(mill_df$signed, predict > .5)
-tab_mat
+# tab_mat <- table(mill_df$signed, predict > 0.5)
+
+# tab_mat
 ```
 
 ### Test case
