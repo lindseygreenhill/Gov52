@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(arm)
 library(stargazer)
 library(performance)
+library(gt)
 library(tidyverse)
 
 # reading the data in and filtering to 1992
@@ -122,7 +123,7 @@ stargazer(mod_1, mod_2, mod_3, mod_4, type = "latex")
 
 ```
 
-
+\newpage
 
 ### Part b: model comparison
 
@@ -199,7 +200,8 @@ tibble(
   "Model" = c("mod_1", "mod_2", "mod_3", "mod_4"),
   "Null Dev" = 1534.1,
   "Resid. Dev" = an$"Resid. Dev"
-)
+) %>%
+  gt()
 
 ```
 
@@ -256,10 +258,11 @@ models 2, 3, and 4.
 stargazer(mod_2, type = "latex")
 ```
 
+\newpage 
 
 ### Coefficient interpretations
 
-* Constant term: $logit^{-1}(-4.846) = $ The coefficient for educ1 is .174. In
+* Constant term: The coefficient for educ1 is .174. In
 context, this means that a difference in 1 of education level corresponds with a
 .174 positive difference in the logit probability of voting for Bush. However,
 the intercept is an impossible condition, so I will not try and interpret the
@@ -460,6 +463,8 @@ stargazer(mod_4_1, mod_4_2, mod_4_3, type = "latex")
 
 ```
 
+\newpage
+
 ### Model Choice: deviances
 
 The residual deviance for Model 1 is about 2 less than the Null Deviance,
@@ -482,7 +487,8 @@ tibble(
   "Model" = c("mod_4_1", "mod_4_2", "mod_4_3"),
   "Null Dev" = c(720.5, 720.6, 720.5),
   "Resid. Dev" = an_4$"Resid. Dev"
-)
+) %>%
+  gt()
 
 ```
 
@@ -539,6 +545,8 @@ signing the petition whether or not they saw an affluent or poor actor.
 stargazer(mod_4_1, type = "latex")
 
 ```
+
+\newpage
 
 ### Error Rate
 
