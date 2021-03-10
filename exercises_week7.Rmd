@@ -1,0 +1,114 @@
+---
+title: "class_3_10"
+author: "Lindsey Greenhill"
+date: "3/10/2021"
+output: pdf_document
+---
+
+Excercises 5.7 and 5.8
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(arm)
+library(stargazer)
+library(performance)
+library(gt)
+library(tidyverse)
+
+rodents <- read.delim("http://www.stat.columbia.edu/~gelman/arm/examples/rodents/rodents.dat", sep=" ")
+```
+
+
+7. Limitations of logistic regression: consider a dataset with n = 20 points, a single  predictor x that takes on the values 1,..., 20, and binary data y. Construct data  values y1,..., y20 that are inconsistent with any logistic regression on x. Fit a  logistic regression to these data, plot the data and fitted curve, and explain why  you can say that the model does not fit the data.  8. Building a logistic regression model: the folder rodents
+
+```{r}
+
+set.seed(123)
+
+# assigning values randomly for y so there isn't a relationship 
+
+df_7 <- tibble(x = 1:20,
+               y = sample(x = c(0,1),
+                          size = 20,
+                          replace = T))
+
+# doing link = logit so it makes results easier to interpret
+
+fit <- glm(y ~ x, data = df_7, family = binomial(link = "logit"))
+
+an <- anova(fit)
+
+tibble(
+  "Null Dev" = 27.53,
+  "Resid. Dev" = an$"Resid. Dev"
+) %>%
+  gt()
+
+# it is not a good fit because the residual deviance is only 1.6 lower, so x is only random noise and not a predictor
+
+ggplot(df_7, aes(x = x, y = y)) +
+  geom_point() +
+  geom_smooth(method = glm, 
+              method.args = list(family = binomial))
+
+# the plot shows that the model does not fit the data. This makes sense 
+
+pchisq(deviance(fit), df.residual(fit), lower = FALSE)
+
+# we are concerned with the upper tail. That is 95% and above. The value is so low of the p chis sq so that indicates a bad fit. 
+```
+
+* The pchisq value for the model is .067. Because the significance comes from the higher tail of the chisq distribution, this low score indicates that the model is not good fit. 
+
+* The plot of the data and fit visualizes the poor relationship between the model curve and the data points. 
+
+* The null deviance is 27.53 and the residual deviance is 27.51. The difference in these two values is less than 1, implying that the x variable has no explanatory power. 
+
+# Question 8
+
+8. Building a logistic regression model: the folder rodents contains data on rodents  in a sample of New York City apartments.  (a) Build a logistic regression model to predict the presence of rodents (the variable rodent2 in the dataset) given indicators for the ethnic groups (race).  Combine categories as appropriate. Discuss the estimated coefficients in the  model.  (b) Add to your model some other potentially relevant predictors describing the  apartment, building, and community district. Build your model using the  general principles explained in Section 4.6. Discuss the coefficients for the  ethnicity indicators in your model.  9. Graphing logistic regressions: the well-switching
+
+```{r, results = "asis"}
+
+# recoding the values
+
+rodents$race <- dplyr::recode(rodents$race, "1" = "White", "2" = "Black", "3" = "Puerto Rican",
+                                              "4" = "Other Hispanic", "5" = "Asian/Pacific Islander",
+                                              "6" = "Amer-Indian/Native Alaskan", "7" = "Two or More Races")
+
+# Not sure what categories would be appropriate to combine. 
+
+rodents <- rodents %>%
+  mutate(race = as_factor(race))
+mod_1 <- glm(rodent2 ~ race, data = rodents,
+             family = binomial(link = "logit"))
+
+stargazer(mod_1, type = "text")
+
+
+```
+
+### Coefficients
+
+I will be using the divide by 4 rule, which is a rough but quick interpretation of the coefficients. 
+
+* Intercept: The average probability for white households to have rodents in their building. But the intercept is the baseline of comparison for the other race on average, and it doesn't tell us how likely it is that white households have rodents in their house. 
+
+* Black: compared to white households, black households are roughly 38% more likely than white households to live in a rodent-infested building on average. This coefficient is statistically significant.
+
+* Puerto Rican: compared to white households, puerto rican households are roughly 36% more likely than white households to live in a rodent-infested building on average. This coefficient is statistically significant.
+
+* Other Hispanic: compared to white households, other hispanic households are roughly 46% more likely than white households to live in a rodent-infested building on average. This coefficient is statistically significant. 
+
+* Pacific Islander: compared to white households, pacific islander households are roughly 10% more likely than white households to live in a rodent-infested building on average. This coefficient is not statistically significant.
+
+* American Indian/Native American: compared to white households, Native American or American Indian households are roughly 54% more likely than white households to live in a rodent-infested building on average. This coefficient is statistically significant.
+
+* Two or More Races: compared to white households, two or more race households are roughly 19% more likely than white households to live in a rodent-infested building on average. This coefficient is not statistically significant.
+
+## Part b
+```{r}
+mod_2 <- glm(rodent2 ~ race + dilap + regext + totincome2 , data = rodents,
+             family = binomial(link = "logit"))
+```
+
