@@ -5,7 +5,7 @@ date: "3/10/2021"
 output: pdf_document
 ---
 
-Excercises 5.7 and 5.8
+# Exercises 5.7 and 5.8
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -15,13 +15,16 @@ library(performance)
 library(gt)
 library(tidyverse)
 
-rodents <- read.delim("http://www.stat.columbia.edu/~gelman/arm/examples/rodents/rodents.dat", sep=" ")
+rodents <-
+  read.delim("http://www.stat.columbia.edu/~gelman/arm/examples/rodents/rodents.dat",
+             sep = " ")
 ```
 
+# Question 7
 
-7. Limitations of logistic regression: consider a dataset with n = 20 points, a single  predictor x that takes on the values 1,..., 20, and binary data y. Construct data  values y1,..., y20 that are inconsistent with any logistic regression on x. Fit a  logistic regression to these data, plot the data and fitted curve, and explain why  you can say that the model does not fit the data.  8. Building a logistic regression model: the folder rodents
+7. Limitations of logistic regression: consider a dataset with n = 20 points, a single  predictor x that takes on the values 1,..., 20, and binary data y. Construct data  values y1,..., y20 that are inconsistent with any logistic regression on x. Fit a  logistic regression to these data, plot the data and fitted curve, and explain why  you can say that the model does not fit the data.
 
-```{r}
+```{r, message=FALSE}
 
 set.seed(123)
 
@@ -40,25 +43,30 @@ an <- anova(fit)
 
 tibble(
   "Null Dev" = 27.53,
-  "Resid. Dev" = an$"Resid. Dev"
+  "Resid. Dev" = an$"Resid. Dev"[1]
 ) %>%
   gt()
 
-# it is not a good fit because the residual deviance is only 1.6 lower, so x is only random noise and not a predictor
+# it is not a good fit because the residual deviance is only 1.6 lower, so x is
+# only random noise and not a predictor
 
 ggplot(df_7, aes(x = x, y = y)) +
   geom_point() +
   geom_smooth(method = glm, 
-              method.args = list(family = binomial))
+              method.args = list(family = binomial)) +
+  labs(title = "glm y vs x",
+       subtitle = "Model is a bad fit") +
+  theme_classic()
 
 # the plot shows that the model does not fit the data. This makes sense 
 
 pchisq(deviance(fit), df.residual(fit), lower = FALSE)
 
-# we are concerned with the upper tail. That is 95% and above. The value is so low of the p chis sq so that indicates a bad fit. 
+# we are concerned with the upper tail. That is 95% and above. The value is so
+# low of the p chis sq so that indicates a bad fit.
 ```
 
-* The pchisq value for the model is .067. Because the significance comes from the higher tail of the chisq distribution, this low score indicates that the model is not good fit. 
+* The pchisq value for the model is .067. Because the significance comes from the higher tail of the chisq distribution, this low score indicates that the model is not a good fit. 
 
 * The plot of the data and fit visualizes the poor relationship between the model curve and the data points. 
 
@@ -66,25 +74,45 @@ pchisq(deviance(fit), df.residual(fit), lower = FALSE)
 
 # Question 8
 
-8. Building a logistic regression model: the folder rodents contains data on rodents  in a sample of New York City apartments.  (a) Build a logistic regression model to predict the presence of rodents (the variable rodent2 in the dataset) given indicators for the ethnic groups (race).  Combine categories as appropriate. Discuss the estimated coefficients in the  model.  (b) Add to your model some other potentially relevant predictors describing the  apartment, building, and community district. Build your model using the  general principles explained in Section 4.6. Discuss the coefficients for the  ethnicity indicators in your model.  9. Graphing logistic regressions: the well-switching
+8. Building a logistic regression model: the folder rodents contains data on rodents  in a sample of New York City apartments.  (a) Build a logistic regression model to predict the presence of rodents (the variable rodent2 in the dataset) given indicators for the ethnic groups (race).  Combine categories as appropriate. Discuss the estimated coefficients in the  model.  (b) Add to your model some other potentially relevant predictors describing the  apartment, building, and community district. Build your model using the  general principles explained in Section 4.6. Discuss the coefficients for the  ethnicity indicators in your model.
+
+## Part a
 
 ```{r, results = "asis"}
 
-# recoding the values
+# recoding the values so they will be easier to interpret.
 
-rodents$race <- dplyr::recode(rodents$race, "1" = "White", "2" = "Black", "3" = "Puerto Rican",
-                                              "4" = "Other Hispanic", "5" = "Asian/Pacific Islander",
-                                              "6" = "Amer-Indian/Native Alaskan", "7" = "Two or More Races")
+rodents$race <-
+  dplyr::recode(
+    rodents$race,
+    "1" = "White",
+    "2" = "Black",
+    "3" = "Puerto Rican",
+    "4" = "Other Hispanic",
+    "5" = "Asian/Pacific Islander",
+    "6" = "Amer-Indian/Native Alaskan",
+    "7" = "Two or More Races"
+  )
 
-# Not sure what categories would be appropriate to combine. 
+# Not sure what categories would be appropriate to combine so I'm not going to
+# combine any.
 
 rodents <- rodents %>%
   mutate(race = as_factor(race))
+
+# making white the first level in the factor variable
+
+rodents$race <- relevel(rodents$race, "White")
+
+# creating model with only race predictor
+
+# residual deviance: 1518.7, df 1515. null deviance 1672.2
+
 mod_1 <- glm(rodent2 ~ race, data = rodents,
              family = binomial(link = "logit"))
 
-stargazer(mod_1, type = "text")
 
+stargazer(mod_1, type = "latex")
 
 ```
 
@@ -92,23 +120,121 @@ stargazer(mod_1, type = "text")
 
 I will be using the divide by 4 rule, which is a rough but quick interpretation of the coefficients. 
 
-* Intercept: The average probability for white households to have rodents in their building. But the intercept is the baseline of comparison for the other race on average, and it doesn't tell us how likely it is that white households have rodents in their house. 
+* Intercept: The intercept is the baseline of comparison for the other races vs
+white households on average, but it doesn't tell us how likely it is that white
+households have rodents in their house.
 
-* Black: compared to white households, black households are roughly 38% more likely than white households to live in a rodent-infested building on average. This coefficient is statistically significant.
 
-* Puerto Rican: compared to white households, puerto rican households are roughly 36% more likely than white households to live in a rodent-infested building on average. This coefficient is statistically significant.
+* Black: compared to white households, black households are roughly 38% more
+likely than white households to live in a rodent-infested building on average.
+This coefficient is statistically significant.
 
-* Other Hispanic: compared to white households, other hispanic households are roughly 46% more likely than white households to live in a rodent-infested building on average. This coefficient is statistically significant. 
+* Puerto Rican: compared to white households, puerto rican households are
+roughly 36% more likely than white households to live in a rodent-infested
+building on average. This coefficient is statistically significant.
 
-* Pacific Islander: compared to white households, pacific islander households are roughly 10% more likely than white households to live in a rodent-infested building on average. This coefficient is not statistically significant.
+* Other Hispanic: compared to white households, other hispanic households are
+roughly 46% more likely than white households to live in a rodent-infested
+building on average. This coefficient is statistically significant.
 
-* American Indian/Native American: compared to white households, Native American or American Indian households are roughly 54% more likely than white households to live in a rodent-infested building on average. This coefficient is statistically significant.
+* Pacific Islander: compared to white households, pacific islander households
+are roughly 10% more likely than white households to live in a rodent-infested
+building on average. This coefficient is not statistically significant.
 
-* Two or More Races: compared to white households, two or more race households are roughly 19% more likely than white households to live in a rodent-infested building on average. This coefficient is not statistically significant.
+* American Indian/Native Alaskan: compared to white households, Native Alanskan
+or American Indian households are roughly 54% more likely than white households
+to live in a rodent-infested building on average. This coefficient is
+statistically significant.
+
+* Two or More Races: compared to white households, two or more race households
+are roughly 19% more likely than white households to live in a rodent-infested
+building on average. This coefficient is not statistically significant.
 
 ## Part b
-```{r}
-mod_2 <- glm(rodent2 ~ race + dilap + regext + totincome2 , data = rodents,
+
+```{r, results = "asis"}
+
+# creating new model that takes race, dilapidated status of building, income
+# level, and regext, which tells us whether there is a regular exterminator
+# service
+
+mod_2 <- glm(rodent2 ~ race + dilap + regext + totincom2 , data = rodents,
              family = binomial(link = "logit"))
+
+# residual deviance: 1326, df = 1331. null deviance 1672.2
+
+stargazer(mod_1, mod_2, type = "latex")
 ```
 
+## Discussion of Ethnicity Coefficients
+
+Adding new explanatory variables changes the values of the ethnicity
+coefficients in varying degrees. I am using the divide by 4 rule for
+convenience.
+
+* Black:compared to white households, black households are roughly 35% more
+likely than white households to live in a rodent-infested building on average,
+holding all else constant. This is a smaller effect than the one we saw in model
+1 (38%). This coefficient is statistically significant.
+
+* Puerto Rican: compared to white households, puerto rican households are
+roughly 30% more likely than white households to live in a rodent-infested
+building on average, holding all else constant. This is a smaller effect than
+the one we saw in model 1 (36%). This coefficient is statistically significant.
+
+* Other Hispanic: compared to white households, other hispanic households are
+roughly 44% more likely than white households to live in a rodent-infested
+building on average, holding all else constant.  This is a smaller effect than
+the one we saw in model 1 (46%). This coefficient is statistically significant.
+
+* Pacific Islander: compared to white households, pacific islander households
+are roughly 7% more likely than white households to live in a rodent-infested
+building on average, holding all else constant. This is a smaller effect than
+the one we saw in model 1 (10%). This coefficient is not statistically
+significant.
+
+* American Indian/Native Alaskan: compared to white households, Native Alaskan
+or American Indian households are roughly 48% more likely than white households
+to live in a rodent-infested building on average, holding all else constant.
+This is a smaller effect than the one we saw in model 1 (54%). This coefficient
+is statistically significant.
+
+* Two or More Races: compared to white households, two or more race households
+are roughly 21% more likely than white households to live in a rodent-infested
+building on average, holding all else constant. This is a larger effect than the
+one we saw in model 1 (19%). This coefficient is not statistically significant.
+
+
+Overall, with the exception of the two or more races variable, the ethnicity
+coefficients are smaller in model 2 compared to model 1. This suggests that
+other predictors in model 2 added explanatory power. The statistical
+significance did not change for any of the coefficients.
+
+## Discussion of Deviances
+
+The table below shows the null and residual deviances for both models. The
+residual deviance is significantly lower for model 2 than model 1, also
+suggesting that the new variables have explanatory power and are not just
+"noise."
+
+```{r}
+tibble("Model" = c("mod_1", "mod_2"),
+       "Null Deviance" = 1672.2,
+       "Residual Deviance" = c(1518.7, 1326)) %>%
+  gt()
+```
+
+
+## Interpretation of other coefficients in mod_2
+
+* dilap: holding all else constant, a dilapidated building is roughly 30% more
+likely than a non dilapidated building to have rodents on average. This
+coefficient is statistically significant.
+
+* regext: holding all else constant, buildings with regular exterminators are
+roughly 5% less likely to have rodents than buildings without regular
+exterminators on average. This coefficient is not statistically significant
+
+* totincom2: this coefficient is very close to 0 (.00001), meaning that an
+increase in 1 dollar has a tiny effect in the likeliness to have rodents in a
+building.
