@@ -66,11 +66,13 @@ pchisq(deviance(fit), df.residual(fit), lower = FALSE)
 # low of the p chis sq so that indicates a bad fit.
 ```
 
-* The pchisq value for the model is .067. Because the significance comes from the higher tail of the chisq distribution, this low score indicates that the model is not a good fit. 
+* The pchisq value for the model is .069. Because the significance comes from the higher tail of the chisq distribution, this low score indicates that the model is not a good fit. 
 
 * The plot of the data and fit visualizes the poor relationship between the model curve and the data points. 
 
 * The null deviance is 27.53 and the residual deviance is 27.51. The difference in these two values is less than 1, implying that the x variable has no explanatory power. 
+
+* Additionally, the coefficient in the model is not statistically significant. 
 
 # Question 8
 

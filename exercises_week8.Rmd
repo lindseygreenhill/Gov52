@@ -1,0 +1,112 @@
+---
+title: "exercises_week8"
+author: "Lindsey Greenhill"
+date: "3/17/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+# Question 1
+
+Suppose you are interested in the effect of the presence of vending machines in
+schools on childhood obesity. What randomized experiment would you want to  do
+(in a perfect world) to evaluate this question?
+
+* Given a truly random experiment, we would expect that the covariates will be
+on average the same pre treatment across treatment and control groups. So, we
+can compare the two groups and theoretically would not have to control for
+confounding variables.
+
+* If the experiment was not truly random and balanced, you would probably want to
+control for factors such as average student income, public or private status, or
+geographic region.
+
+* Randomly assign vending machines to x amount of schools (treatment) and then
+assign no vending machines to y amount of schools (control) in a large sample size. The control and
+treatment group should be relatively equal and balanced. 
+
+* One way to make sure the treatment and control groups are balanced is to use a blocked experiment design and assign 
+
+* In a perfect world, we would sample from the population of elementary schools
+(the question specified childhood obesity) in the US
+
+* The vending machines will have the same foods for sale. 
+
+* Measure the average obesity levels in the treatment and control groups after a
+year for four years. 
+
+* If the sample size is large enough, the treatment effect should not be
+substantively changed by individual student movements or any other
+abnormalities.
+ 
+ 
+# Question 4
+
+The table below describes a hypothetical experiment on 2400 persons. Each row  of the table specifies a category of person, as defined by his or her pre-treatment  predictor x, treatment indicator T, and potential outcomes y 0, y1. (For simplicity,  we assume unrealistically that all the people in this experiment fit into these eight  categories.) 
+
+
+
+## Part a
+
+The average treatment effect in the population of 2400 persons is ...
+
+2. You can see that the true treatment effect is 2 for each category
+
+## Part b
+
+Is it plausible to believe that these data came from a randomized experiment?
+
+* The amount of people in categories: more people were assigned treatment than control. That suggests that it may not be experimental. 
+
+* The number of people in categories are round numbers (200, 300, 500). That suggests that it may be random and experimental. 
+
+* There is a 50/50 split between genders, suggesting that it may be experimental. 
+
+The round numbers in the categories and the perfect 50/50 split between genders suggests that the data could plausibly come from a randomized experiment. 
+
+We have access to the counter-factual observations, so this definitely wasn't real. 
+
+## Part c
+
+Another population quantity is the mean of y for those who received the treatment minus the mean of y for those who did not. What is the relation between this quantity and the average treatment effect?
+
+weighted avg of y1 - weighted avg of y0
+
+```{r}
+w_avg_T <- (500*6 + 500*6 + 200*12 + 200*12) / 1400
+
+w_avg_C <- (300*4 + 300*4 + 200*10 + 200*10) / 1000
+
+effect <- w_avg_T - w_avg_C
+```
+
+The value for the treatment minus control weighted averages is 1.31. This is less than the average treatment effect we calculated in part a. 
+
+
+## Part d
+
+For these data, is it plausible to believe that treatment assignment is ignorable given sex?
+
+The distribution of potential outcomes is the same across levels of the treatment variable, T, once we condition on confounding covariates X. 
+
+The outcomes do not change at all given sex, meaning that sex doesn't effect the 
+
+"For ignorability to hold ,it is not necessary that the two treatments be equally likely to be picked, but rather that the probability that a given treatment is picked should be equal"
+
+In this case, that would mean that categories wiith sex = 1 and sex = 0 would have the same probability of being assigned the treatment. 
+
+This means that those with sex = 1 are equally as likely to be assigned treatment or control and the same for sex = 0. 
+
+It means that treatment is not assigned based on sex. 
+
+x = 0: 50% are T = 1, 50% are T = 0
+x = 1: 50% are T = 1, 50% are T = 0
+
+
+
+
