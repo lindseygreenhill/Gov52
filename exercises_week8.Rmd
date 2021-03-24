@@ -30,8 +30,6 @@ geographic region.
 assign no vending machines to y amount of schools (control) in a large sample size. The control and
 treatment group should be relatively equal and balanced. 
 
-* One way to make sure the treatment and control groups are balanced is to use a blocked experiment design and assign 
-
 * In a perfect world, we would sample from the population of elementary schools
 (the question specified childhood obesity) in the US
 
@@ -47,7 +45,6 @@ abnormalities.
  
 # Question 4
 
-The table below describes a hypothetical experiment on 2400 persons. Each row  of the table specifies a category of person, as defined by his or her pre-treatment  predictor x, treatment indicator T, and potential outcomes y 0, y1. (For simplicity,  we assume unrealistically that all the people in this experiment fit into these eight  categories.) 
 
 
 
@@ -67,13 +64,16 @@ Is it plausible to believe that these data came from a randomized experiment?
 
 * There is a 50/50 split between genders, suggesting that it may be experimental. 
 
-The round numbers in the categories and the perfect 50/50 split between genders suggests that the data could plausibly come from a randomized experiment. 
+The round numbers in the categories and the perfect 50/50 split between genders
+suggests that the data could plausibly come from a randomized experiment.
 
 We have access to the counter-factual observations, so this definitely wasn't real. 
 
 ## Part c
 
-Another population quantity is the mean of y for those who received the treatment minus the mean of y for those who did not. What is the relation between this quantity and the average treatment effect?
+Another population quantity is the mean of y for those who received the
+treatment minus the mean of y for those who did not. What is the relation
+between this quantity and the average treatment effect?
 
 weighted avg of y1 - weighted avg of y0
 
@@ -85,27 +85,33 @@ w_avg_C <- (300*4 + 300*4 + 200*10 + 200*10) / 1000
 effect <- w_avg_T - w_avg_C
 ```
 
-The value for the treatment minus control weighted averages is 1.31. This is less than the average treatment effect we calculated in part a. 
+The value for the treatment minus control weighted averages is 1.31. This is
+less than the average treatment effect we calculated in part a.
 
 
 ## Part d
 
-For these data, is it plausible to believe that treatment assignment is ignorable given sex?
+For these data, is it plausible to believe that treatment assignment is
+ignorable given sex?
 
-The distribution of potential outcomes is the same across levels of the treatment variable, T, once we condition on confounding covariates X. 
+From the textbook: "For ignorability to hold, it is not necessary that the two
+treatments be equally likely to be picked, but rather that the probability that
+a given treatment is picked should be equal"
 
-The outcomes do not change at all given sex, meaning that sex doesn't effect the 
-
-"For ignorability to hold ,it is not necessary that the two treatments be equally likely to be picked, but rather that the probability that a given treatment is picked should be equal"
-
-In this case, that would mean that categories wiith sex = 1 and sex = 0 would have the same probability of being assigned the treatment. 
-
-This means that those with sex = 1 are equally as likely to be assigned treatment or control and the same for sex = 0. 
-
-It means that treatment is not assigned based on sex. 
+In the context of this problem, that would mean that men are equally as likely
+to be assigned control or treatment and women are euqlaly as likely to be
+assigned control or treatment. This seems to hold given the information below:
 
 x = 0: 50% are T = 1, 50% are T = 0
+
 x = 1: 50% are T = 1, 50% are T = 0
+
+The probability of being assigned treatment or control is 50% for both sex
+categories, meaning that sex is ignorable.
+
+
+
+
 
 
 
