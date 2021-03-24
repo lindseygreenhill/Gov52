@@ -1,0 +1,99 @@
+---
+title: "exercises_week9"
+author: "Lindsey Greenhill"
+date: "3/24/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(MASS)
+library(tidyverse)
+
+df <-foreign::read.dta("http://www.stat.columbia.edu/~gelman/arm/examples/risky.behavior/risky_behaviors.dta")
+
+# making variable into integer
+
+df <- df %>%
+  mutate(fupacts = as.integer(fupacts))
+```
+
+
+# Question 1
+
+## Part a
+
+```{r}
+
+mod_a  <- glm(fupacts ~ women_alone, data = df, family = "poisson")
+
+
+summary(mod_a)
+
+# look at the deviance residuals. The min and the max should be relatively equal in absolute value. If they aren't, it hints at overdispersion. 
+
+# look at the deviances:  roughly 240 on 1 degree of freedom. We are way in the tail. So much so that we don't have to do the p chisq thing. 
+
+ssr <- (df$fupacts - mod_a$fitted.values)^2/sqrt(mod_a$fitted.values)
+sum_ssr <- sum(ssr^2)
+
+# k is the number of variables that you add over the mean model
+# 1 df. Value is way into the tail, so there is a problem. 
+
+over <- 1/(nrow(df) - mod_a$df.null -  mod_a$df.residual)*sum_ssr
+
+```
+
+## Part b
+
+```{r}
+mod_b <- glm(fupacts ~ women_alone  + sex + couples + bs_hiv + bupacts, data = df,
+              family = "poisson")
+
+summary(mod_b)
+
+# look at the deviance residuals. The min and the max should be relatively equal in absolute value. If they aren't, it hints at overdispersion. 
+
+
+ssr_b <- (df$fupacts - mod_b$fitted.values)^2/sqrt(mod_b$fitted.values)
+sum_ssr_b <- sum(ssr_b^2)
+
+# k is the number of variables that you add over the mean model
+# 5 df. Value is way into the tail, so there is a problem. So there appears to be overdispersion. It is over 3.84 (alpha = .05). It means thatthe  standard errors are wrong/not calculated correctly. 
+
+over_b <- 1/(nrow(df) - (mod_b$df.null - mod_b$df.residual))*sum_ssr_b
+```
+
+## Part c
+
+```{r}
+
+#  fitting a negative binomial
+
+mod_c  <- glm.nb(fupacts ~ women_alone  + sex + couples + bs_hiv + bupacts, data = df)
+
+summary(mod_c)
+
+# really changes the  deviance residuals range. the min and max are pretty much equal now (abs value). Sex and couples become not statistically significant. 
+
+ssr_c <- (df$fupacts - mod_c$fitted.values)^2/sqrt(mod_c$fitted.values)
+sum_ssr_c <- sum(ssr_c^2)
+
+# k is the number of variables that you add over the mean model
+# 5 df. Value is way into the tail, so there is a problem. So there appears to be overdispersion. It is over 3.84 (alpha = .05). It means thatthe  standard errors are wrong/not calculated correctly. 
+
+over_c <- 1/(nrow(df) - (mod_c$df.null - mod_c$df.residual))*sum_ssr_c
+
+```
+
+## Part d
+
+* Infinitesimal Interval:
+
+* Non-simultaneity of Events:
+
+* I.I.D Arrivals"
+
+
+
+
