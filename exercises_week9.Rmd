@@ -8,6 +8,7 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(MASS)
+library(stargazer)
 library(tidyverse)
 
 df <-foreign::read.dta("http://www.stat.columbia.edu/~gelman/arm/examples/risky.behavior/risky_behaviors.dta")
@@ -30,9 +31,11 @@ mod_a  <- glm(fupacts ~ women_alone, data = df, family = "poisson")
 
 summary(mod_a)
 
-# look at the deviance residuals. The min and the max should be relatively equal in absolute value. If they aren't, it hints at overdispersion. 
+# look at the deviance residuals. The min and the max should be relatively equal
+# in absolute value. If they aren't, it hints at overdispersion.
 
-# look at the deviances:  roughly 240 on 1 degree of freedom. We are way in the tail. So much so that we don't have to do the p chisq thing. 
+# look at the deviances:  roughly 240 on 1 degree of freedom. We are way in the
+# tail. So much so that we don't have to do the p chisq thing.
 
 ssr <- (df$fupacts - mod_a$fitted.values)^2/sqrt(mod_a$fitted.values)
 sum_ssr <- sum(ssr^2)
@@ -43,8 +46,37 @@ sum_ssr <- sum(ssr^2)
 over <- 1/(nrow(df) - mod_a$df.null -  mod_a$df.residual)*sum_ssr
 
 ```
+### Model fit
+
+* The treatment variable appears to be statistically significant
+
+* There is a significant difference between the null deviance and the residual
+deviance, indicating that the model is better than the null model
+
+### Overdisperion check
+
+There are a few ways to check for overdispersion. A quick way to check is to
+look at the minimum and maximum deviance residuans. If the model is a good fit,
+the min and max should be relatively equal in absolute value.
+
+* The minimum deviance residual = -6 while the maximum deviance residual = 27.2.
+These two values differ substantially in absolute value and hints at
+overdispersion
+
+Another way to check for overdispersion is to perform a chi squared test on the
+sum of the squared residuals. If the model is not a good fit, the test statistic
+will be in the tail of the distribution.
+
+* The sum of the squared residuals (220045935) is large enough that we know it
+will be in the tail of the chi squared distribution, which also hints at
+overdispersion.
+
+We can also look at the overdispersion ratio, which is also far into the tail of
+the chi squared distribution and also suggests overdispersion
 
 ## Part b
+
+In the code below I extend the model to include pre-treatment variables.
 
 ```{r}
 mod_b <- glm(fupacts ~ women_alone  + sex + couples + bs_hiv + bupacts, data = df,
@@ -58,13 +90,35 @@ summary(mod_b)
 ssr_b <- (df$fupacts - mod_b$fitted.values)^2/sqrt(mod_b$fitted.values)
 sum_ssr_b <- sum(ssr_b^2)
 
-# k is the number of variables that you add over the mean model
-# 5 df. Value is way into the tail, so there is a problem. So there appears to be overdispersion. It is over 3.84 (alpha = .05). It means thatthe  standard errors are wrong/not calculated correctly. 
+# k is the number of variables that you add over the mean model 5 df. Value is
+# way into the tail, so there is a problem. So there appears to be
+# overdispersion. It is over 3.84 (alpha = .05). It means thatthe  standard
+# errors are wrong/not calculated correctly.
 
 over_b <- 1/(nrow(df) - (mod_b$df.null - mod_b$df.residual))*sum_ssr_b
 ```
 
+### Model fit
+
+* All of the variables appear to be statistically significant
+
+* There is a significant difference between the null deviance and the residual
+deviance, indicating that the model is improved from the model in part a
+
+### Overdisperion check
+
+* The minimum and maximum deviance residuals are closer in absolute value than
+they were in moda, however, they are differ by 5, hinting at overdispersion
+
+* The sum of the squared residuals (100100674) is far into the tail of the chi
+squared distribution, also suggesting overdispersion
+
+* The overdispersion ratio (233334.9) is also far into the tail of the chi
+squared distribution, also suggesting overdispersion
+
 ## Part c
+
+In the code below I fit an overdispersed Poission model using the glm.nm() function. 
 
 ```{r}
 
@@ -85,6 +139,13 @@ sum_ssr_c <- sum(ssr_c^2)
 over_c <- 1/(nrow(df) - (mod_c$df.null - mod_c$df.residual))*sum_ssr_c
 
 ```
+### Effectiveness of intervention
+
+* The coefficient estimates change from moda/modb to modc, suggesting that the new model may have been an effective intervention
+
+* Two variables that were statistically significant in the previous models are now not statistically significant (sexman and couples), suggesting that this model may have more accurately calculated the standard errors and was thus an effective intervention
+
+* The min and max deviance residuals aare now relatively equal in absolute value, suggesting that the the intervention was effective
 
 ## Part d
 
@@ -92,7 +153,12 @@ over_c <- 1/(nrow(df) - (mod_c$df.null - mod_c$df.residual))*sum_ssr_c
 
 * Non-simultaneity of Events:
 
-* I.I.D Arrivals"
+* I.I.D Arrivals: The assumption that observations are indedentent and identically distributed. I have some concerns about this one beacause I would expect the outcomes for each couple to be highly correltaed. 
+
+```{r}
+
+```
+
 
 
 
