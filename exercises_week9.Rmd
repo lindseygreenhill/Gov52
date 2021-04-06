@@ -163,6 +163,7 @@ I have concerns about the IID Arrivals assumption (the assumption that the obser
 # need this library to do the regression
 
 library(nnet)
+library(sjPlot)
 
 # reading in data
 
@@ -215,8 +216,40 @@ expected <- function(x, c1.5, c2.5, sigma){
   return((1*(1-p1.5) + 2*(p.15-p2.5) + 3*p2.5))
 }
 
+summary(mod_3)
+
+plot_model(mod_3,
+           type = "est",
+           title = "Multinomial Model Results")
+
 ```
 
+## Part c
+
+Use the model to make predictions about the vote choice for some test cases of interest
+
+```{r}
+
+# this row is someone who is 63, has some college, 34 to 67th percentile income, and is slightly conservative. They are actually a D. 
+
+pred_df <- nes_clean_simple %>%
+  slice(1) %>%
+  select(-partyid3)
+
+# The model incorrectly predicts this person to be R
+
+predict(mod_3, pred_df)
+
+# case 2. This person is 40, has some college, 34 to 67th percentile income, and is conservative. They are actually a R. 
+
+pred_df_2 <- nes_clean_simple %>%
+  slice(2)  %>%
+  select(-partyid3)
+
+# The model correctly predicts this person is R
+
+predict(mod_3, pred_df_2)
+```
 
 
 
