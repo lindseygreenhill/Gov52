@@ -26,6 +26,8 @@ df <- df %>%
 
 ```{r}
 
+# DO I NEED TO ADD THE COUPLES THING?
+
 mod_a  <- glm(fupacts ~ women_alone, data = df, family = "poisson")
 
 
@@ -42,6 +44,8 @@ sum_ssr <- sum(ssr^2)
 
 # k is the number of variables that you add over the mean model
 # 1 df. Value is way into the tail, so there is a problem. 
+
+# WHY IS THS WRONG???
 
 over <- 1/(nrow(df) - mod_a$df.null -  mod_a$df.residual)*sum_ssr
 
@@ -149,13 +153,67 @@ over_c <- 1/(nrow(df) - (mod_c$df.null - mod_c$df.residual))*sum_ssr_c
 
 ## Part d
 
-* Infinitesimal Interval:
+I have concerns about the IID Arrivals assumption (the assumption that the observations are independent and identially distributed). I would expect the sexual activities of couples are not independent and are highly correlated. Because the data includes responses from both men and women in the same couple, the observations are probably not completely independent. 
 
-* Non-simultaneity of Events:
 
-* I.I.D Arrivals: The assumption that observations are indedentent and identically distributed. I have some concerns about this one beacause I would expect the outcomes for each couple to be highly correltaed. 
+# Question 2
+
+```{r include=FALSE}
+
+# need this library to do the regression
+
+library(nnet)
+
+# reading in data
+
+nes <- foreign::read.dta("http://www.stat.columbia.edu/~gelman/arm/examples/nes/nes5200_processed_voters_realideo.dta") %>% 
+  filter(year == 2000) %>%
+  select(partyid3,age, gender, race, educ1, income, ideo7)
+
+nes_clean <- nes %>%
+  drop_na() %>%
+  mutate(
+    gender = as.numeric(str_sub(gender, 1, 1)) - 1,
+    educ1 = as.double(str_sub(educ1, 1, 1)),
+    partyid3 = as_factor(str_sub(partyid3, 1, 1)),
+    income = as.double(str_sub(income, 1, 1)),
+    ideo7 = as.double(str_sub(ideo7, 1, 1)),
+    race = as_factor(str_sub(race, 1, 1))
+  ) %>%
+  mutate(partyid3 = if_else(partyid3 == 3, "R",
+                            if_else(partyid3 == 2, "I", "D"))) %>%
+  mutate(race = case_when(race == 1 ~ "white",
+                          race == 2 ~ "black",
+                          race == 3 ~ "asian",
+                          race == 4 ~ "native_american",
+                          race == 5 ~ "hispanic"))
+
+nes_clean_simple <- nes_clean %>%
+ select(-race, -gender)
+```
+
+## Part a
 
 ```{r}
+
+# using the method from class
+
+mod_2 <- multinom(partyid3 ~ age + educ1 + income + ideo7,
+                  data = nes_clean_simple)
+summary(mod_2)
+
+# alternative way
+
+mod_3 <- polr(factor(partyid3) ~ age + educ1 + income + ideo7, 
+              data = nes_clean_simple)
+
+# from book
+
+expected <- function(x, c1.5, c2.5, sigma){
+  p1.5 <- invlogit((x-c1.5)/sigma)
+  p2.5 <- invlogit((x-c2.5)/sigma)
+  return((1*(1-p1.5) + 2*(p.15-p2.5) + 3*p2.5))
+}
 
 ```
 
