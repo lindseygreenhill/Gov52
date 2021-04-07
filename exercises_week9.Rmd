@@ -11,6 +11,8 @@ library(MASS)
 library(stargazer)
 library(tidyverse)
 
+# reading in the data
+
 df <-foreign::read.dta("http://www.stat.columbia.edu/~gelman/arm/examples/risky.behavior/risky_behaviors.dta")
 
 # making variable into integer
@@ -26,10 +28,11 @@ df <- df %>%
 
 ```{r}
 
-# DO I NEED TO ADD THE COUPLES THING?
+# have to include both women_alone and couples as treatments for the model
 
-mod_a  <- glm(fupacts ~ women_alone, data = df, family = "poisson")
+mod_a  <- glm(fupacts ~ women_alone + couples, data = df, family = "poisson")
 
+# summary of the model
 
 summary(mod_a)
 
@@ -39,20 +42,32 @@ summary(mod_a)
 # look at the deviances:  roughly 240 on 1 degree of freedom. We are way in the
 # tail. So much so that we don't have to do the p chisq thing.
 
-ssr <- (df$fupacts - mod_a$fitted.values)^2/sqrt(mod_a$fitted.values)
-sum_ssr <- sum(ssr^2)
+#ssr <- (df$fupacts - mod_a$fitted.values)^2/sqrt(mod_a$fitted.values)
+#sum_ssr <- sum(ssr^2)
 
 # k is the number of variables that you add over the mean model
 # 1 df. Value is way into the tail, so there is a problem. 
 
-# WHY IS THS WRONG???
 
-over <- 1/(nrow(df) - mod_a$df.null -  mod_a$df.residual)*sum_ssr
+
+#over <- 1/(nrow(df) - mod_a$df.null -  mod_a$df.residual)*sum_ssr
+
+# I'm going with the code from the book. It's more correct and makes more sense
+
+yhat <- predict(mod_a, type = "response")
+z <- (df$fupacts - yhat) / sqrt(yhat)
+
+# cat("overdispersion ratio is", sum(z^2)/(nrow(df) - 3), "\n")
+
+# cat("p-value of overdispersion test is", pchisq(sum(z^2), nrow(df) - 3), "\n")
+
+# there is evidence of overdispersion
+
 
 ```
 ### Model fit
 
-* The treatment variable appears to be statistically significant
+* The treatment variables appears to be statistically significant
 
 * There is a significant difference between the null deviance and the residual
 deviance, indicating that the model is better than the null model
@@ -63,43 +78,48 @@ There are a few ways to check for overdispersion. A quick way to check is to
 look at the minimum and maximum deviance residuans. If the model is a good fit,
 the min and max should be relatively equal in absolute value.
 
-* The minimum deviance residual = -6 while the maximum deviance residual = 27.2.
+* The minimum deviance residual = -6.6 while the maximum deviance residual = 27.2.
 These two values differ substantially in absolute value and hints at
 overdispersion
 
 Another way to check for overdispersion is to perform a chi squared test on the
-sum of the squared residuals. If the model is not a good fit, the test statistic
-will be in the tail of the distribution.
+overdispersion ratio. If the overdisperion ratio is in the tail of the
+distribution, then there is likely overdispersion
 
-* The sum of the squared residuals (220045935) is large enough that we know it
-will be in the tail of the chi squared distribution, which also hints at
-overdispersion.
+* The overdispersion ratio is `r sum(z^2)/(nrow(df) - 3)`
 
-We can also look at the overdispersion ratio, which is also far into the tail of
-the chi squared distribution and also suggests overdispersion
+* The p value of the overdispersion test is `r pchisq(sum(z^2), nrow(df) - 3)`
+
+* The p value is in the tail of the chi squared distribution, suggesting that
+there is overdispersion
+
+
 
 ## Part b
 
 In the code below I extend the model to include pre-treatment variables.
 
+
 ```{r}
-mod_b <- glm(fupacts ~ women_alone  + sex + couples + bs_hiv + bupacts, data = df,
-              family = "poisson")
+# creating model with pre treatment variables. It will still probably be
+# overdispersed
+
+mod_b <- glm(fupacts ~ women_alone  + sex + couples + bs_hiv + bupacts, 
+             data = df,
+             family = "poisson")
 
 summary(mod_b)
 
-# look at the deviance residuals. The min and the max should be relatively equal in absolute value. If they aren't, it hints at overdispersion. 
+# look at the deviance residuals. The min and the max should be relatively equal
+# in absolute value. If they aren't, it hints at overdispersion.
+
+# doing the same overdispersion test as in part a
+
+yhat_b <- predict(mod_b, type = "response")
+
+z_b <- (df$fupacts - yhat_b) / sqrt(yhat_b)
 
 
-ssr_b <- (df$fupacts - mod_b$fitted.values)^2/sqrt(mod_b$fitted.values)
-sum_ssr_b <- sum(ssr_b^2)
-
-# k is the number of variables that you add over the mean model 5 df. Value is
-# way into the tail, so there is a problem. So there appears to be
-# overdispersion. It is over 3.84 (alpha = .05). It means thatthe  standard
-# errors are wrong/not calculated correctly.
-
-over_b <- 1/(nrow(df) - (mod_b$df.null - mod_b$df.residual))*sum_ssr_b
 ```
 
 ### Model fit
@@ -112,13 +132,15 @@ deviance, indicating that the model is improved from the model in part a
 ### Overdisperion check
 
 * The minimum and maximum deviance residuals are closer in absolute value than
-they were in moda, however, they are differ by 5, hinting at overdispersion
+they were in mod_a, however, they differ by 5, hinting at overdispersion
 
-* The sum of the squared residuals (100100674) is far into the tail of the chi
-squared distribution, also suggesting overdispersion
+* The overdispersion ratio is `r sum(z_b^2)/(nrow(df) - 6)`
 
-* The overdispersion ratio (233334.9) is also far into the tail of the chi
-squared distribution, also suggesting overdispersion
+* The p value of the overdispersion test is `r pchisq(sum(z_b^2), nrow(df) - 6)`
+
+* The p value is in the tail of the chi squared distribution, suggesting that
+there is overdispersion
+
 
 ## Part c
 
@@ -132,28 +154,51 @@ mod_c  <- glm.nb(fupacts ~ women_alone  + sex + couples + bs_hiv + bupacts, data
 
 summary(mod_c)
 
-# really changes the  deviance residuals range. the min and max are pretty much equal now (abs value). Sex and couples become not statistically significant. 
+# really changes the  deviance residuals range. the min and max are pretty much
+# equal now (abs value). Sex and couples become not statistically significant.
 
-ssr_c <- (df$fupacts - mod_c$fitted.values)^2/sqrt(mod_c$fitted.values)
-sum_ssr_c <- sum(ssr_c^2)
-
-# k is the number of variables that you add over the mean model
-# 5 df. Value is way into the tail, so there is a problem. So there appears to be overdispersion. It is over 3.84 (alpha = .05). It means thatthe  standard errors are wrong/not calculated correctly. 
-
-over_c <- 1/(nrow(df) - (mod_c$df.null - mod_c$df.residual))*sum_ssr_c
 
 ```
 ### Effectiveness of intervention
 
-* The coefficient estimates change from moda/modb to modc, suggesting that the new model may have been an effective intervention
+We assume that the glm.nm function fixes the overdispersion problem from the
+poisson models above
 
-* Two variables that were statistically significant in the previous models are now not statistically significant (sexman and couples), suggesting that this model may have more accurately calculated the standard errors and was thus an effective intervention
+* The coefficient estimates change from mod_a/mod_b to modc, suggesting that the
+new model may have been an effective intervention
 
-* The min and max deviance residuals aare now relatively equal in absolute value, suggesting that the the intervention was effective
+* Two variables that were statistically significant in the previous models are
+now not statistically significant (sexman and couples), suggesting that this
+model may have more accurately calculated the standard errors and was thus an
+effective intervention
+
+
+### Interpretation of some coefficients
+
+We can interprety the coefficients in the model using the formula 1/(exp(beta)),
+where an increase in 1 in the variables leads to a 1/(exp(beta)) change in the
+outcome variable
+
+* Women_alone: Using the above formula, an increase in the women_along variables
+(or switching from non treatment to treatment) results in a 1/(exp(-.72)), or `r 1/(exp(-.72))`
+increase in unprotected sex acts on average, holding all else
+constant
+
+* bs_hivpositive: those who have a positive baseline hiv status on average
+engaged in 1/(exp(.02248), or `r 1/(exp(.02248))`, more unprotected sex acts,
+holding all else constant
+
+
+
+
 
 ## Part d
 
-I have concerns about the IID Arrivals assumption (the assumption that the observations are independent and identially distributed). I would expect the sexual activities of couples are not independent and are highly correlated. Because the data includes responses from both men and women in the same couple, the observations are probably not completely independent. 
+I have concerns about the IID Arrivals assumption (the assumption that the
+observations are independent and identically distributed). I would expect the
+sexual activities of couples are not independent and are highly correlated.
+Because the data includes responses from both men and women in the same couple,
+the observations are probably not completely independent.
 
 
 # Question 2
@@ -170,6 +215,8 @@ library(sjPlot)
 nes <- foreign::read.dta("http://www.stat.columbia.edu/~gelman/arm/examples/nes/nes5200_processed_voters_realideo.dta") %>% 
   filter(year == 2000) %>%
   select(partyid3,age, gender, race, educ1, income, ideo7)
+
+# recoding and cleaning data. Taken from a pset a while back
 
 nes_clean <- nes %>%
   drop_na() %>%
@@ -201,32 +248,62 @@ nes_clean_simple <- nes_clean %>%
 
 mod_2 <- multinom(partyid3 ~ age + educ1 + income + ideo7,
                   data = nes_clean_simple)
-summary(mod_2)
 
-# alternative way
+# using stargazer to display the model
 
-mod_3 <- polr(factor(partyid3) ~ age + educ1 + income + ideo7, 
-              data = nes_clean_simple)
+stargazer(mod_2, type = "text")
 
-# from book
 
-expected <- function(x, c1.5, c2.5, sigma){
-  p1.5 <- invlogit((x-c1.5)/sigma)
-  p2.5 <- invlogit((x-c2.5)/sigma)
-  return((1*(1-p1.5) + 2*(p.15-p2.5) + 3*p2.5))
-}
+# using the plot model function to show the coefficients for the model
 
-summary(mod_3)
-
-plot_model(mod_3,
+plot_model(mod_2,
            type = "est",
            title = "Multinomial Model Results")
 
+# interpret the results using the divide by 4 rule!
+
 ```
+
+## Part b
+
+The variables have different levels of statistical significance for I and R. I
+will interpret the statistically significant coefficients below using the divide
+by 4 rule. Although this doesn't give an exact interpretation of the
+coefficients, it is much quicker to calculate.
+
+### Coefficient Interpretations: I
+
+The coefficients for age, educ1, and income are not statistically significant
+for the Independent coefficients. Ideology is the only statistically significant
+variable.
+
+* Using the divide by 4 rule, a 1 point increase on the ideology scale is
+associated with roughly an 11% increase on average in the likelihood of being an
+Independent compared to a Democrat, holding all else constant.
+
+### Coefficient Interpretations: R
+
+The coefficients for  educ1, income, and ideo7 are statistically significant for
+the Republican coefficients. Age is the only non statistically significant
+variable.  In summary, the effects of education, income, and ideology have
+greater impacts on the likelihood of being a Republican compared to a Democrat
+verses the likihood of being an Independent compared to a Democrat.
+
+* Using the divide by 4 rule, a 1 point increase on the ideology scale is
+associated with roughly an 19% increase on average in the likelihood of being a
+Republican compared to a Democrat, holding all else constant.
+
+* Using the divide by 4 rule, a 1 point increase on the education scale is
+associated with roughly an 12% increase on average in the likelihood of being a
+Republican compared to a Democrat, holding all else constant.
+
+* Using the divide by 4 rule, a 1 point increase on the income scale is
+associated with roughly a 8% increase on average in the likelihood of being a
+Republican compared to a Democrat, holding all else constant.
 
 ## Part c
 
-Use the model to make predictions about the vote choice for some test cases of interest
+For part c, I chose two test cases from the data frame to make predictions off of
 
 ```{r}
 
@@ -238,7 +315,7 @@ pred_df <- nes_clean_simple %>%
 
 # The model incorrectly predicts this person to be R
 
-predict(mod_3, pred_df)
+predict(mod_2, pred_df)
 
 # case 2. This person is 40, has some college, 34 to 67th percentile income, and is conservative. They are actually a R. 
 
@@ -248,9 +325,25 @@ pred_df_2 <- nes_clean_simple %>%
 
 # The model correctly predicts this person is R
 
-predict(mod_3, pred_df_2)
+predict(mod_2, pred_df_2)
 ```
 
+### Test case 1
 
+* This prediction is for someone who is 63, has some college education, is in
+the 34 to 67th percentile income, and is slightly conservative.
+
+* The model predicts that thiis person is a Republican
+
+* The model is incorrect -- this person was actually a Democrat
+
+### Test case 2
+
+* This prediction is for someone who is 40, has some college education, is in
+the 34 to 67th percentile income, and is conservative.
+
+* The model predicts that this person is a Republican
+
+* The model is correct -- this person was actually a Republican
 
 
