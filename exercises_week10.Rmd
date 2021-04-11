@@ -11,7 +11,9 @@ options(contrasts = rep("contr.treatment",2))
 save.image()
 library(MASS)
 library(stargazer)
+library(gt)
 library(tidyverse)
+set.seed(123)
 ```
 
 # Question 2
@@ -24,7 +26,10 @@ nes <- foreign::read.dta("http://www.stat.columbia.edu/~gelman/arm/examples/nes/
   filter(year == 2000) %>%
   select(partyid3,age, gender, race, educ1, income, ideo7)
 
-# recoding and cleaning data. Taken from a pset a while back
+# recoding and cleaning data. Taken from a pset a while back. added the part of
+# filtering out the apolitical party from the partyid3. Realized this is a
+# mistake from my previous coding. Also, I had to keep it as numbers in order
+# for the plot in part a to work.
 
 nes_clean <- nes %>%
   drop_na() %>%
@@ -52,11 +57,15 @@ nes_clean_simple <- nes_clean %>%
 
 ## Part a
 
+In the code below, I created both an ordered multinomial logit model (mod_1) and probit model (mod_2). See the stargazer table below for the estimates for both these models. For the dependent variable, partyid3, 1 = Independent, 2 = Democrat, and 3 = Republican. The reference category is Independent.
+
 ```{r}
 
-# creating multinomial logit
+# creating multinomial logit (ordered). Chose to include race so the graphical
+# plot below looks more normal
 
-mod_1 <- polr(factor(partyid3) ~ age + educ1 + income + ideo7 + race,
+mod_1 <- polr(factor(partyid3) ~ age + educ1 + income + 
+                ideo7 + race,
               data = nes_clean)
 
 # creating probit model
@@ -67,14 +76,30 @@ mod_2 <- polr(factor(partyid3) ~ age + educ1 + income + ideo7 + race,
 
 # summary of both models
 
-summary(mod_1)
-summary(mod_2)
+# summary(mod_1)
+# summary(mod_2)
 
-# graphs of both models. Make these like the ones in 6.4 of the textbook
+stargazer(mod_1, mod_2, type = "text")
+
+```
+
+In the code below, I create a graphical representation of the multinomial logit
+model. The plot is based on figure 6.4 from the text book, where the curves show
+the expected responses for party identification based off of ideology. The data
+points do not seem to follow the curve very well, suggesting that the model
+might not be the best fit.
+
+```{r}
+
+# graphs of both models. Make these like the ones in 6.4 of the textbook. Had to
+# create the inverse logit function. Maybe I could have gotten this from the arm
+# lib? Not sure
 
 invlogit <- function(Xb) {
   1/(1+exp(-Xb))
 }
+
+# taken pretty much directly from the book
 
 expected <- function (x, c1.5, c2.5, sigma){ 
   p1.5 <- invlogit ((x-c1.5)/sigma) 
@@ -82,7 +107,8 @@ expected <- function (x, c1.5, c2.5, sigma){
   return ((1*(1-p1.5) + 2*(p1.5-p2.5) + 3*p2.5))
 } 
 
-# multi model
+# graph of the mod_1. We don't need to do the probit model for this part. It's a
+# bit weird that the cut points are outside of the range of the data.
 
 {
 plot (nes_clean$ideo7, nes_clean$partyid3, xlim=c(0,12), ylim=c(1,3), 
@@ -96,5 +122,92 @@ curve (expected (
   add=TRUE) 
 }
 
+```
+
+## Part b
+
+Explain the results of the fitted model
+
+# Question 3
+
+### Data
+
+I am using the rodents data from the week 7 pset. 
+
+```{r include = FALSE}
+
+# reading in the data
+
+rodents <-
+  read.delim("http://www.stat.columbia.edu/~gelman/arm/examples/rodents/rodents.dat",
+             sep = " ")
+
+# cleaning the data. Using code from old pset. 
+# recoding the values so they will be easier to interpret.
+
+rodents$race <-
+  dplyr::recode(
+    rodents$race,
+    "1" = "White",
+    "2" = "Black",
+    "3" = "Puerto Rican",
+    "4" = "Other Hispanic",
+    "5" = "Asian/Pacific Islander",
+    "6" = "Amer-Indian/Native Alaskan",
+    "7" = "Two or More Races"
+  )
+
+# Not sure what categories would be appropriate to combine so I'm not going to
+# combine any.
+
+rodents <- rodents %>%
+  mutate(race = as_factor(race))
+
+# making white the first level in the factor variable
+
+rodents$race <- relevel(rodents$race, "White")
+```
+
+
+## Part a
+
+In the code below I create a logit (mod_3) and probot (mod_4) model. 
+
+```{r}
+
+# logit model
+
+mod_3 <- glm(rodent2 ~ race + dilap + regext , data = rodents,
+             family = binomial(link = "logit"))
+
+# probit model
+
+mod_4 <- glm(rodent2 ~ race + dilap + regext , data = rodents,
+             family = binomial(link = "probit"))
+
+# displaying the two models
+
+stargazer(mod_3, mod_4, type = "text")
+```
+
+
+The logit and the probit estimates should be more or less the same after scaling by 1.6. We can check this by multiplying the probit coefficients by 1.6. After making this adjustments, we see that the estimates roughly match up with eachother (see table below).
+
+```{r}
+
+# scaling the coefficients by 1.6
+
+new_coefs <- mod_4$coefficients * 1.6
+
+# making table of new coefficients. Using gt for better presentation
+
+coefs_tb <- tibble(mod_3_est = mod_3$coefficients, 
+       mod_4_est = mod_4$coefficients,
+       mod_4_est_scaled_1.6 = new_coefs) %>%
+  gt()
+
+# displaying table
+
+coefs_tb
 ```
 
