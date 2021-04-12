@@ -50,6 +50,10 @@ nes_clean <- nes %>%
                           race == 4 ~ "native_american",
                           race == 5 ~ "hispanic"))
 
+# setting the levels to be Democrat, Independent, Republican
+
+nes_clean$partyid3 <- factor(nes_clean$partyid3, levels = c(1,2,3))
+
 nes_clean_simple <- nes_clean %>%
  select(-race, -gender)
 ```
@@ -171,7 +175,7 @@ rodents$race <- relevel(rodents$race, "White")
 
 ## Part a
 
-In the code below I create a logit (mod_3) and probot (mod_4) model. 
+In the code below I create a logit (mod_3) and probit (mod_4) model. 
 
 ```{r}
 
@@ -191,7 +195,10 @@ stargazer(mod_3, mod_4, type = "text")
 ```
 
 
-The logit and the probit estimates should be more or less the same after scaling by 1.6. We can check this by multiplying the probit coefficients by 1.6. After making this adjustments, we see that the estimates roughly match up with eachother (see table below).
+The logit and the probit estimates should be more or less the same after scaling
+by 1.6. We can check this by multiplying the probit coefficients by 1.6. After
+making this adjustments, we see that the estimates roughly match up with
+eachother (see table below).
 
 ```{r}
 
@@ -204,7 +211,9 @@ new_coefs <- mod_4$coefficients * 1.6
 coefs_tb <- tibble(mod_3_est = mod_3$coefficients, 
        mod_4_est = mod_4$coefficients,
        mod_4_est_scaled_1.6 = new_coefs) %>%
-  gt()
+  gt() %>%
+  fmt_number(columns = everything(),
+             decimals = 2)
 
 # displaying table
 
