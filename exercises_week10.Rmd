@@ -63,7 +63,7 @@ nes_clean_simple <- nes_clean %>%
 
 In the code below, I created both an ordered multinomial logit model (mod_1) and probit model (mod_2). See the stargazer table below for the estimates for both these models. For the dependent variable, partyid3, 1 = Independent, 2 = Democrat, and 3 = Republican. The reference category is Independent.
 
-```{r}
+```{r results = "asis"}
 
 # creating multinomial logit (ordered). Chose to include race so the graphical
 # plot below looks more normal
@@ -80,10 +80,10 @@ mod_2 <- polr(factor(partyid3) ~ age + educ1 + income + ideo7 + race,
 
 # summary of both models
 
-# summary(mod_1)
+ summary(mod_1)
 # summary(mod_2)
 
-stargazer(mod_1, mod_2, type = "text")
+stargazer(mod_1, mod_2, type = "latex")
 
 ```
 
@@ -128,9 +128,22 @@ curve (expected (
 
 ```
 
+
 ## Part b
 
 Explain the results of the fitted model
+
+I thought about the results of the fitted model by looking at the statistical significance of each estimate and the value of that estimate relative to the cutoff points of the ordered model
+
+* Cut points: Democrat:Independent 4.8669, Independent:Republican 5.278
+
+* Statistical significance: the educ1, income, and ideo7 coefficients are statistically significant at the alpha = .05 level. The age and race variables are not statistically significant.
+
+* educ1 coefficient = .343: the education coefficient (.343) is less than the difference between the cut points (~.41). This means that an increase in education by itself will not actually move a voter from one political party to another. 
+
+* income coefficient = .196: the income bracket coefficient (.196) is elss than the difference between the cutoff points, similar to the education coefficient. Thus, a one increase in income categories doesn't move a voter on average from one party to another.
+
+* ideo7 coefficient = .724: the ideology coefficient (.724) is greater than the difference between the cut points, meaning that an increase on the ideology scale has a relatively larger effect than the education or income scales and can bring a voter from one party to another party on average. 
 
 # Question 3
 
@@ -177,7 +190,7 @@ rodents$race <- relevel(rodents$race, "White")
 
 In the code below I create a logit (mod_3) and probit (mod_4) model. 
 
-```{r}
+```{r results="asis"}
 
 # logit model
 
@@ -191,7 +204,7 @@ mod_4 <- glm(rodent2 ~ race + dilap + regext , data = rodents,
 
 # displaying the two models
 
-stargazer(mod_3, mod_4, type = "text")
+stargazer(mod_3, mod_4, type = "latex")
 ```
 
 
