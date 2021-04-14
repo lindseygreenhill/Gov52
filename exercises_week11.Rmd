@@ -1,0 +1,102 @@
+---
+title: "exercises_week11"
+author: "Lindsey Greenhill"
+date: "4/14/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(contrasts = rep("contr.treatment",2))
+save.image()
+library(MASS)
+library(stargazer)
+library(gt)
+library(skimr)
+library(tidyverse)
+set.seed(123)
+```
+
+
+# Question 25.2
+
+## Part a
+
+```{r}
+
+# using built in iris data set. filtering to one species and selecting petal
+# length and width. Petal length is x petal width is y.
+
+iris_2 <- iris %>%
+  filter(Species == "setosa") %>%
+  select(Petal.Length, Petal.Width)
+
+# MCAR data. create binomial 0 1 vector and knock out everywhere there is a 1
+# using r binom
+
+
+
+# MAR data. going to delete 25 out of 50 obvervations. Going to pick on the the
+# higher petal widths. Creating rbinom vectors below with higher and lower
+# probabilities of deletion
+
+high_del <- rbinom(n = 25, size = 1, prob = 0.7)
+low_del <- rbinom(n = 25, size = 1, prob = 0.3)
+
+del_vec <- c(high_del, low_del)
+
+# deleting based off of vectors above
+
+iris_available <- iris_2 %>% 
+  arrange(desc(Petal.Width)) %>% 
+  mutate(del_col = del_vec) %>% 
+  mutate(Petal.Length = ifelse(del_col == 1, NA, Petal.Length))
+
+```
+
+## Part b
+
+```{r}
+
+# creating regression with full data but with y as predictor on x
+
+mod_complete <- lm(Petal.Length ~ Petal.Width, data = iris_2)
+
+mod_available <- lm(Petal.Length ~ Petal.Width, data = iris_available)
+
+# the models are relatively similar because we didn't have any missing x values.
+# our deletion was random with regard to petal length.
+
+stargazer(mod_complete, mod_available, type = "text")
+```
+
+The two models above are relatively similar. This makes sense because our deletion method above was random with regard to petal length. 
+
+```{r}
+
+mod_complete_c <- lm(Petal.Width ~ Petal.Length, data = iris_2)
+
+mod_available_c <- lm(Petal.Width ~ Petal.Length, data = iris_available)
+
+# the models are significantly different. 
+
+stargazer(mod_complete_c, mod_available_c, type = "text")
+
+```
+
+# STAR data
+
+```{r}
+star98.missing <- read.table("star98.missing.dat.txt",header=TRUE) 
+par(mfrow=c(1,2),mar=c(3,3,3,3)) 
+plot(star98.missing$SUBSIDIZED.LUNCH,star98.missing$READING.ABOVE.50,pch="+",col="blue") 
+abline(lm(star98.missing$READING.ABOVE.50~star98.missing$SUBSIDIZED.LUNCH),lwd=3) 
+mtext(side=1,cex=1.3,line=2.5,"District Percent Receiving Subsidized Lunch") 
+mtext(side=2,cex=1.3,line=2.5,"District Percent Above National Reading Median") 
+plot(star98.missing$PTRATIO,star98.missing$READING.ABOVE.50,pch="+",col="blue") 
+abline(lm(star98.missing$READING.ABOVE.50~star98.missing$PTRATIO),lwd=3) 
+mtext(side=1,cex=1.3,line=2.5,"District Pupil/Teacher Ratio") 
+mtext(side=2,cex=1.3,line=2.5,"District Percent Above National Reading Median") 
+mtext(side=3,cex=1.5,outer=TRUE,line=-1,"Calfornia 9th Grade by District, 1998")
+```
+
