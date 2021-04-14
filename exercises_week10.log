@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2021.2.14)  13 APR 2021 17:25
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2021.2.14)  13 APR 2021 22:45
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -620,44 +620,44 @@ File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 131.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10> on input line 157.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7> on input line 157.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 157.
 [1
 
 {/Users/lindseygreenhill/Library/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdft
-ex.map}]
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 181.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 181.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 181.
-[2]
+ex.map}] [2]
 <exercises_week10_files/figure-latex/unnamed-chunk-3-1.pdf, id=51, 469.755pt x 
 325.215pt>
 File: exercises_week10_files/figure-latex/unnamed-chunk-3-1.pdf Graphic file (t
 ype pdf)
 <use exercises_week10_files/figure-latex/unnamed-chunk-3-1.pdf>
 Package pdftex.def Info: exercises_week10_files/figure-latex/unnamed-chunk-3-1.
-pdf  used on input line 265.
+pdf  used on input line 241.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-[3 <./exercises_week10_files/figure-latex/unnamed-chunk-3-1.pdf>]
+[3]
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 2
-78.
+54.
 (/Users/lindseygreenhill/Library/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
-(hyperref)                than one, level fixed on input line 305.
+(hyperref)                than one, level fixed on input line 281.
 
-[4] [5]
-Underfull \vbox (badness 10000) detected at line 426
+[4 <./exercises_week10_files/figure-latex/unnamed-chunk-3-1.pdf>]
+Underfull \vbox (badness 10000) detected at line 402
  []
 
+[5]
 
-Package caption Warning: Unused \captionsetup[table] on input line 411.
+Package caption Warning: Unused \captionsetup[table] on input line 387.
 See the caption package documentation for explanation.
 
-[6] (./exercises_week10.aux)
+[6] [7] (./exercises_week10.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
@@ -665,13 +665,13 @@ Package rerunfilecheck Info: File `exercises_week10.out' has not changed.
 (rerunfilecheck)             Checksum: 3B73F1730679770745BDB5EDDD7C5012;529.
  ) 
 Here is how much of TeX's memory you used:
- 11874 strings out of 481288
- 181002 string characters out of 5915561
- 479185 words of memory out of 5000000
+ 11875 strings out of 481288
+ 181008 string characters out of 5915561
+ 480185 words of memory out of 5000000
  28553 multiletter control sequences out of 15000+600000
  454299 words of font info for 70 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 71i,10n,74p,434b,361s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 71i,10n,74p,434b,445s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/Users/lindseygreenhill/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.
 enc}{/Users/lindseygreenhill/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-e
 c.enc}{/Users/lindseygreenhill/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm
@@ -691,10 +691,10 @@ lindseygreenhill/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtk10.pfb></
 Users/lindseygreenhill/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt10.
 pfb></Users/lindseygreenhill/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/l
 mtti10.pfb>
-Output written on exercises_week10.pdf (6 pages, 238515 bytes).
+Output written on exercises_week10.pdf (7 pages, 237123 bytes).
 PDF statistics:
- 135 PDF objects out of 1000 (max. 8388607)
- 111 compressed objects within 2 object streams
- 22 named destinations out of 1000 (max. 500000)
+ 141 PDF objects out of 1000 (max. 8388607)
+ 116 compressed objects within 2 object streams
+ 23 named destinations out of 1000 (max. 500000)
  54 words of extra memory for PDF output out of 10000 (max. 10000000)
 
