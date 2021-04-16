@@ -13,6 +13,7 @@ library(MASS)
 library(stargazer)
 library(gt)
 library(skimr)
+library(mice)
 library(tidyverse)
 set.seed(123)
 ```
@@ -70,7 +71,10 @@ mod_available <- lm(Petal.Length ~ Petal.Width, data = iris_available)
 stargazer(mod_complete, mod_available, type = "text")
 ```
 
-The two models above are relatively similar. This makes sense because our deletion method above was random with regard to petal length. 
+The two models above are relatively similar. This makes sense because our
+deletion method above was random with regard to petal length.
+
+## Part c
 
 ```{r}
 
@@ -78,7 +82,8 @@ mod_complete_c <- lm(Petal.Width ~ Petal.Length, data = iris_2)
 
 mod_available_c <- lm(Petal.Width ~ Petal.Length, data = iris_available)
 
-# the models are significantly different. 
+# the models are significantly different with regards to both the coefficients
+# and the estimates.
 
 stargazer(mod_complete_c, mod_available_c, type = "text")
 
@@ -98,5 +103,69 @@ abline(lm(star98.missing$READING.ABOVE.50~star98.missing$PTRATIO),lwd=3)
 mtext(side=1,cex=1.3,line=2.5,"District Pupil/Teacher Ratio") 
 mtext(side=2,cex=1.3,line=2.5,"District Percent Above National Reading Median") 
 mtext(side=3,cex=1.5,outer=TRUE,line=-1,"Calfornia 9th Grade by District, 1998")
+
+summary(star98.missing)
+
+# how to check if there is a pattern? for there is subsidized lunch
+```
+
+
+## Part a
+
+determine how much missing data there is and if there is a discernable pattern
+
+Looking at the summary above there appears to be some missing data. 
+
+* SUBSIDIZED.LUNCH has 90 NA's
+
+* PTRATION has 104 NA's
+
+* READING.ABOVE.50 has 106 NA's
+
+To see if there is any discernable pattern I used the md.pattern() function from
+the mice library (see output below). 
+
+From it we can tell that there are 89
+complete samples. 50 samples that just miss the READING.ABOVE.50, 49 samples
+that just miss PTRATIO, 37 samples that just miss SUBSIDIZED.LUNCH, 25 samples
+that only have SUBSIZED LUNCH, 23 samples that only have PTRATIO, 22 samples
+that only have READING.ABOVE.50, and 8 samples that have no data.
+
+```{r}
+
+# shows up the pattern of missing data. From it we can tell that there are 89
+# complete samples. 50 samples that just miss the READING.ABOVE.50, 49 samples
+# that just miss PTRATIO, 37 samples that just miss SUBSIDIZED.LUNCH, 25 samples
+# that only have SUBSIZED LUNCH, 23 samples that only have PTRATIO, 22 samples
+# that only have READING.ABOVE.50, and 8 samples that have no data.
+
+md.pattern(star98.missing)
+```
+
+
+## Part b
+
+```{r}
+
+# first have to create normal model using casewise deletion
+
+mod_star <- lm(READING.ABOVE.50 ~ SUBSIDIZED.LUNCH + PTRATIO,
+               na.action = na.omit,
+               data = star98.missing)
+
+# now using mice package to create multiple imputation model
+
+# setting number to 5 like in lecture
+
+m <- 5
+imp.star <- mice(star98.missing, m)
+star.mids <-  lm.mids(READING.ABOVE.50 ~ SUBSIDIZED.LUNCH + PTRATIO,
+                      data = imp.star)
+
+
+# creating table of model estimates next to each other where left is case wise
+# deletion and right is mice
+
+cbind(summary(mod_star)$coef[,1:2], summary(pool(star.mids))[,1:2])
 ```
 
