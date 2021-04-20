@@ -14,6 +14,7 @@ library(stargazer)
 library(gt)
 library(skimr)
 library(mice)
+library(arm)
 library(tidyverse)
 set.seed(123)
 ```
@@ -32,10 +33,6 @@ iris_2 <- iris %>%
   filter(Species == "setosa") %>%
   select(Petal.Length, Petal.Width)
 
-# MCAR data. create binomial 0 1 vector and knock out everywhere there is a 1
-# using r binom
-
-
 
 # MAR data. going to delete 25 out of 50 obvervations. Going to pick on the the
 # higher petal widths. Creating rbinom vectors below with higher and lower
@@ -46,7 +43,8 @@ low_del <- rbinom(n = 25, size = 1, prob = 0.3)
 
 del_vec <- c(high_del, low_del)
 
-# deleting based off of vectors above
+# deleting based off of vectors above. Deleting based on petal.width (out
+# outcome variable)
 
 iris_available <- iris_2 %>% 
   arrange(desc(Petal.Width)) %>% 
@@ -57,7 +55,16 @@ iris_available <- iris_2 %>%
 
 ## Part b
 
-```{r}
+In the code below, I perform a regression of petal length on width, or x on y
+for both the full data (mod_complete) frame and the available data frame
+(mod_available). The models are relatively consistent. The constant for the full
+model is 1.328 and the constant for the available model is 1.38. The coefficient
+for petal.width for the full model is .546 and the coefficient for petal width
+for the available data is .327. It makes sense that the two models are not
+drastically different because the missing data is random with respext to petal
+length.
+
+```{r results="asis"}
 
 # creating regression with full data but with y as predictor on x
 
@@ -68,15 +75,22 @@ mod_available <- lm(Petal.Length ~ Petal.Width, data = iris_available)
 # the models are relatively similar because we didn't have any missing x values.
 # our deletion was random with regard to petal length.
 
-stargazer(mod_complete, mod_available, type = "text")
+stargazer(mod_complete, mod_available, type = "latex")
 ```
 
-The two models above are relatively similar. This makes sense because our
-deletion method above was random with regard to petal length.
 
 ## Part c
 
-```{r}
+In the code below, I perform a regression of petal width on petal length, or y
+on x, for both the full data frame (mod_complete_c) and the available data frame
+(mod_available_c). The models are not consistent with each other. The constant
+for the full model is -.048 and the constant for the available model is .084.
+The coefficient for petal length for the full model is .201 and the coefficient
+for petal length for the available model .097, less than half of the first
+model. It makes sense that  these models are inconsistent because the missing
+data is not random with respect to petal width.
+
+```{r results="asis"}
 
 mod_complete_c <- lm(Petal.Width ~ Petal.Length, data = iris_2)
 
@@ -85,8 +99,37 @@ mod_available_c <- lm(Petal.Width ~ Petal.Length, data = iris_available)
 # the models are significantly different with regards to both the coefficients
 # and the estimates.
 
-stargazer(mod_complete_c, mod_available_c, type = "text")
+stargazer(mod_complete_c, mod_available_c, type = "latex")
 
+```
+
+## Part d
+
+The new model, shown in the third column of the stargazer table, has very different estimates from both the complete and partial models in part c. These differences show that how you treat missing data can have large effects for your model.
+
+```{r results="asis"}
+
+# using random imputation function from slides
+
+random.imp.vec <- function(V)  {
+  gone <- is.na(V)
+  there <- V[!gone]
+  V[gone] <- sample(x=there,size=sum(gone),replace=TRUE)
+  return(V)
+}
+
+# creating the new data fram
+
+df_d <- random.imp.vec(iris_available)
+
+# creating the model with the imputed data
+
+mod_d <- lm(Petal.Width ~ Petal.Length, data = df_d)
+
+# comparing the models
+
+stargazer(mod_complete_c, mod_available_c, mod_d,
+          type = "latex")
 ```
 
 # STAR data
@@ -143,9 +186,17 @@ md.pattern(star98.missing)
 ```
 
 
-## Part b
+## Parts b and c
 
-```{r}
+In the code below, I first create a case wise deletion model and then a mice
+model. The table below shows the results of the case wise deletion model on the
+left and the mice model on the right. The estimates for the intercept differ by
+about 5 points. The estimates for subsidized.lunch are almost equal, and the
+esttimates for ptratio differ by about .2. Overall, the models are relatively
+similar. The standard errors are a little bit smaller for the imputation model,
+so I am inclined to say it is the better model.
+
+```{r echo=FALSE}
 
 # first have to create normal model using casewise deletion
 
@@ -166,6 +217,7 @@ star.mids <-  lm.mids(READING.ABOVE.50 ~ SUBSIDIZED.LUNCH + PTRATIO,
 # creating table of model estimates next to each other where left is case wise
 # deletion and right is mice
 
-cbind(summary(mod_star)$coef[,1:2], summary(pool(star.mids))[,1:2])
+cbind(summary(mod_star)$coef[,1:2], summary(pool(star.mids))[,1:3]) %>%
+  gt()
 ```
 
