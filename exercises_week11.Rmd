@@ -105,7 +105,10 @@ stargazer(mod_complete_c, mod_available_c, type = "latex")
 
 ## Part d
 
-The new model, shown in the third column of the stargazer table, has very different estimates from both the complete and partial models in part c. These differences show that how you treat missing data can have large effects for your model.
+The new model, shown in the third column of the stargazer table, has very
+different estimates from both the complete and partial models in part c. These
+differences show that how you treat missing data can have large effects for your
+model.
 
 ```{r results="asis"}
 
@@ -155,8 +158,6 @@ summary(star98.missing)
 
 ## Part a
 
-determine how much missing data there is and if there is a discernable pattern
-
 Looking at the summary above there appears to be some missing data. 
 
 * SUBSIDIZED.LUNCH has 90 NA's
@@ -173,6 +174,8 @@ complete samples. 50 samples that just miss the READING.ABOVE.50, 49 samples
 that just miss PTRATIO, 37 samples that just miss SUBSIDIZED.LUNCH, 25 samples
 that only have SUBSIZED LUNCH, 23 samples that only have PTRATIO, 22 samples
 that only have READING.ABOVE.50, and 8 samples that have no data.
+
+
 
 ```{r}
 
@@ -191,12 +194,14 @@ md.pattern(star98.missing)
 In the code below, I first create a case wise deletion model and then a mice
 model. The table below shows the results of the case wise deletion model on the
 left and the mice model on the right. The estimates for the intercept differ by
-about 5 points. The estimates for subsidized.lunch are almost equal, and the
-esttimates for ptratio differ by about .2. Overall, the models are relatively
+about 2 points. The estimates for subsidized.lunch are almost equal, and the
+estimates for ptratio differ by about .1. Overall, the models are relatively
 similar. The standard errors are a little bit smaller for the imputation model,
 so I am inclined to say it is the better model.
 
 ```{r echo=FALSE}
+
+set.seed(1)
 
 # first have to create normal model using casewise deletion
 

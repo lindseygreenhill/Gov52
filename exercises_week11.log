@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2021.2.14)  20 APR 2021 17:13
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2021.2.14)  20 APR 2021 23:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -644,7 +644,7 @@ pdf  used on input line 354.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [4]
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 3
-89.
+86.
 (/Users/lindseygreenhill/Library/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 ) [5 <./exercises_week11_files/figure-latex/unnamed-chunk-5-1.pdf>]
@@ -654,14 +654,14 @@ File: exercises_week11_files/figure-latex/unnamed-chunk-6-1.pdf Graphic file (t
 ype pdf)
 <use exercises_week11_files/figure-latex/unnamed-chunk-6-1.pdf>
 Package pdftex.def Info: exercises_week11_files/figure-latex/unnamed-chunk-6-1.
-pdf  used on input line 417.
+pdf  used on input line 414.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [6 <./exercises_week11_files/figure-latex/unnamed-chunk-6-1.pdf>]
-Underfull \vbox (badness 10000) detected at line 487
+Underfull \vbox (badness 10000) detected at line 484
  []
 
 
-Package caption Warning: Unused \captionsetup[table] on input line 478.
+Package caption Warning: Unused \captionsetup[table] on input line 475.
 See the caption package documentation for explanation.
 
 [7] (./exercises_week11.aux)
@@ -698,7 +698,7 @@ ndseygreenhill/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtk10.pfb></Us
 ers/lindseygreenhill/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt10.pf
 b></Users/lindseygreenhill/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmt
 ti10.pfb>
-Output written on exercises_week11.pdf (7 pages, 242295 bytes).
+Output written on exercises_week11.pdf (7 pages, 242223 bytes).
 PDF statistics:
  160 PDF objects out of 1000 (max. 8388607)
  133 compressed objects within 2 object streams
