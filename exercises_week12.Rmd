@@ -1,0 +1,103 @@
+---
+title: "exercises_week12"
+author: "Lindsey Greenhill"
+date: "4/21/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(MASS)
+library(stargazer)
+library(gt)
+library(skimr)
+library(mice)
+library(arm)
+library(tidyverse)
+set.seed(1121)
+```
+
+# Question 7.1
+
+## Part a
+
+```{r}
+
+# write function for taking shots
+
+shoot <- function(){
+ shot_1 <- rbinom(n = 1, size = 1, prob = .6)
+ bool <- FALSE
+ count <- 1
+ success <- if_else(shot_1 == 1, 1, 0)
+ while(bool == FALSE){
+   shot_2 <- rbinom(n = 1, size = 1, prob = .6)
+   if((shot_2 == 0) & (shot_1 == 0)){
+     count <- count + 1
+     bool <- TRUE
+   }
+   else{
+     success <- if_else(shot_2 == 1, success + 1, success)
+     count <- count + 1
+     shot_1 <- shot_2
+   }
+ }
+ return(c(count,success))
+}
+
+
+```
+
+## Part b
+
+```{r}
+# creating vector to store shot results
+
+results <- tibble()
+
+# simulating the shots 1000 times
+
+for(i in 1:1000){
+  r <- shoot()
+  vec <- tibble(count = r[1],
+                success = r[2])
+  results <- results %>%
+    rbind(vec)
+}
+
+# plotting the results
+
+ggplot(results, aes(x = count)) +
+  geom_histogram(binwidth = 1) +
+  labs(title = "Results of 1000 simulations",
+       x = "Shots",
+       y = "Count") +
+  theme_classic()
+
+# summary table of mean and sd
+
+sum_tbl <- results %>%
+  summarise(mean = mean(count),
+            sd = sd(count))
+
+sum_tbl %>%
+  gt()
+
+```
+
+##  Part c
+
+```{r}
+
+# creating prop success col
+
+results <- results %>%
+  mutate(prop_success = success/count)
+
+# scatterplot
+
+ggplot(results, aes(x = count,  y = prop_success)) +
+  geom_point() +
+  theme_classic()
+```
+
