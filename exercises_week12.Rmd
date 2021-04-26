@@ -170,7 +170,15 @@ head(y.tilde)
 
 ## Part b
 
-```{r}
+In the code below, I created a histogram of the distribution of the difference
+in course evaluation scores of A and B from the 1000 simulations created in part
+a. I then calculated the probability teacher A's course evaluation score being
+greater than teacher B's course evaluation score by calculating the proportion
+of the difference values above 0.
+
+** The probability that A has a higher score than B is 37.1% **
+
+```{r echo=FALSE}
 
 # creating data frame from sim results above. creating new column that is the
 # difference between a and b where v1 is a and v2 is b. If diff is positive,
@@ -199,6 +207,8 @@ prop <- new_df %>%
               values_from = "n",
               names_prefix = "count") %>%
   summarise(prop = count1/(count0 + count1))
+
+hist
 ```
 
 
