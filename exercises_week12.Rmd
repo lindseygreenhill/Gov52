@@ -101,3 +101,105 @@ ggplot(results, aes(x = count,  y = prop_success)) +
   theme_classic()
 ```
 
+# Question 7.4
+
+## Part a
+
+```{r}
+
+# reading in the data
+
+beauty_data <- read.csv("http://www.stat.columbia.edu/~gelman/arm/examples/beauty/ProfEvaltnsBeautyPublic.csv", header = TRUE)
+
+# cleaning the data
+
+beauty_data <- beauty_data %>% 
+  select(profevaluation, 
+               female, courseevaluation, 
+               btystdave, nonenglish, age, 
+               profnumber)
+
+# creating model
+
+mod <- lm(courseevaluation ~ age + female + nonenglish + btystdave, beauty_data)
+
+age <- c(50,60)
+female <- c(1,0)
+nonenglish <- c(0,0)
+btstydave <- c(-1,-.5)
+
+n.tilde <- length(age) # n.tilde is the number of predictions
+
+
+X.tilde <- cbind(rep(1, n.tilde), age, female, nonenglish, btstydave)
+
+head(X.tilde)
+
+n.sims <- 1000
+sim <- sim(mod, n.sims) # Make simulations
+
+
+# creating sims
+
+n.sims <- 1000
+sim <- sim(mod, n.sims)
+
+#sim.88 will give 1000 betas (similar to 1000 regression output) and 1000 sigmas.
+head(sim@coef)
+head(sim@sigma)
+
+# Create an array to save the predicted results.
+
+y.tilde <- array(NA, c(n.sims, n.tilde))
+
+# Predict loop
+for (s in 1:n.sims){
+  y.tilde[s,] <- rnorm (n.tilde, 
+                        X.tilde %*% sim@coef[s,], 
+                        # multiply the new case matrix (X.tilde) by a matrix of simulated coefficients (sim.88@coef)
+                        sim@sigma[s]
+                        # extract the sigma for the predictions and use it as the standard deviation of rnorm()
+                        )
+}
+
+dim(y.tilde)
+head(y.tilde)
+
+
+```
+
+## Part b
+
+```{r}
+
+# creating data frame from sim results above. creating new column that is the
+# difference between a and b where v1 is a and v2 is b. If diff is positive,
+# then a had a better course evaluation than b.
+
+new_df <- y.tilde %>% 
+  as.tibble() %>%
+  mutate(diff = V1 - V2)
+
+hist <- new_df %>%
+  ggplot(aes(x = diff)) +
+  geom_histogram(binwidth = .1) +
+  labs(title = "Difference in Course Evaluation Scores between A and B",
+       subtitle = "1000 simulations",
+       x = "Differencce in course evaluations") +
+  theme_classic()
+
+# calculating the probability that diff is greater than 0 by calculating the
+# proportion of values above 0 in the distribution
+
+prop <- new_df %>%
+  mutate(greater = if_else(diff > 0, 1, 0)) %>%
+  count(greater) %>%
+  pivot_wider(id_cols = everything(),
+              names_from = "greater",
+              values_from = "n",
+              names_prefix = "count") %>%
+  summarise(prop = count1/(count0 + count1))
+```
+
+
+
