@@ -21,16 +21,25 @@ set.seed(1121)
 
 ## Part a
 
+In the code below, I write a function that simulates a person taking a shots
+until he misses 2 in a row with a 60% probability of making the shot.
+
 ```{r}
 
 # write function for taking shots
 
 shoot <- function(){
+  
+ # first shot
+  
  shot_1 <- rbinom(n = 1, size = 1, prob = .6)
  bool <- FALSE
  count <- 1
  success <- if_else(shot_1 == 1, 1, 0)
  while(bool == FALSE){
+   
+   # next shot
+   
    shot_2 <- rbinom(n = 1, size = 1, prob = .6)
    if((shot_2 == 0) & (shot_1 == 0)){
      count <- count + 1
@@ -42,6 +51,9 @@ shoot <- function(){
      shot_1 <- shot_2
    }
  }
+ 
+ # have to return both so I can calculate prop success for next q
+ 
  return(c(count,success))
 }
 
@@ -49,6 +61,10 @@ shoot <- function(){
 ```
 
 ## Part b
+
+In the code below, I simulate the shoot function written in part a 1000 times. I
+then plot the results of the simulation and present summary statistics of the
+distribution.
 
 ```{r}
 # creating vector to store shot results
@@ -67,7 +83,7 @@ for(i in 1:1000){
 
 # plotting the results
 
-ggplot(results, aes(x = count)) +
+plot_1_b <- ggplot(results, aes(x = count)) +
   geom_histogram(binwidth = 1) +
   labs(title = "Results of 1000 simulations",
        x = "Shots",
@@ -80,12 +96,19 @@ sum_tbl <- results %>%
   summarise(mean = mean(count),
             sd = sd(count))
 
-sum_tbl %>%
+sum_1_b <- sum_tbl %>%
   gt()
+
+plot_1_b
+sum_1_b
 
 ```
 
 ##  Part c
+
+In the code below, I calculate the proportion of shots made for each shoot
+function. I then plot the proportion of successes against the shots taken. I
+used geom_jitter to more clearly see all 1000 data points. 
 
 ```{r}
 
@@ -94,16 +117,23 @@ sum_tbl %>%
 results <- results %>%
   mutate(prop_success = success/count)
 
-# scatterplot
+# plotting with gitter and alpha making semi transparent
 
 ggplot(results, aes(x = count,  y = prop_success)) +
-  geom_point() +
+  geom_jitter(width = .5,
+              alpha = .6) +
+  labs(title = "Proportion Success vs Shots Taken",
+       subtitle = "1000 simulations",
+       x = "Shots Taken",
+       y = "Prop Success") +
   theme_classic()
 ```
 
 # Question 7.4
 
 ## Part a
+
+In the code below, I use the sim function to simulate 1000 predictions for teacher A and teacher B.
 
 ```{r}
 
@@ -123,17 +153,22 @@ beauty_data <- beauty_data %>%
 
 mod <- lm(courseevaluation ~ age + female + nonenglish + btystdave, beauty_data)
 
+# creating data for teacher A and teacher B with teacher A first
+
 age <- c(50,60)
 female <- c(1,0)
 nonenglish <- c(0,0)
 btstydave <- c(-1,-.5)
 
+# pretty much copying from Le's example 
+
 n.tilde <- length(age) # n.tilde is the number of predictions
 
+# joining the data together by column to create a matrix
 
 X.tilde <- cbind(rep(1, n.tilde), age, female, nonenglish, btstydave)
 
-head(X.tilde)
+# conducting 1000 sims
 
 n.sims <- 1000
 sim <- sim(mod, n.sims) # Make simulations
@@ -144,26 +179,19 @@ sim <- sim(mod, n.sims) # Make simulations
 n.sims <- 1000
 sim <- sim(mod, n.sims)
 
-#sim.88 will give 1000 betas (similar to 1000 regression output) and 1000 sigmas.
-head(sim@coef)
-head(sim@sigma)
 
 # Create an array to save the predicted results.
 
 y.tilde <- array(NA, c(n.sims, n.tilde))
 
 # Predict loop
+
 for (s in 1:n.sims){
   y.tilde[s,] <- rnorm (n.tilde, 
                         X.tilde %*% sim@coef[s,], 
-                        # multiply the new case matrix (X.tilde) by a matrix of simulated coefficients (sim.88@coef)
                         sim@sigma[s]
-                        # extract the sigma for the predictions and use it as the standard deviation of rnorm()
                         )
 }
-
-dim(y.tilde)
-head(y.tilde)
 
 
 ```
@@ -178,14 +206,14 @@ of the difference values above 0.
 
 ** The probability that A has a higher score than B is 37.1% **
 
-```{r echo=FALSE}
+```{r warning=FALSE}
 
 # creating data frame from sim results above. creating new column that is the
 # difference between a and b where v1 is a and v2 is b. If diff is positive,
 # then a had a better course evaluation than b.
 
 new_df <- y.tilde %>% 
-  as.tibble() %>%
+  as_tibble() %>%
   mutate(diff = V1 - V2)
 
 hist <- new_df %>%
@@ -193,7 +221,7 @@ hist <- new_df %>%
   geom_histogram(binwidth = .1) +
   labs(title = "Difference in Course Evaluation Scores between A and B",
        subtitle = "1000 simulations",
-       x = "Differencce in course evaluations") +
+       x = "Difference in course evaluations") +
   theme_classic()
 
 # calculating the probability that diff is greater than 0 by calculating the
