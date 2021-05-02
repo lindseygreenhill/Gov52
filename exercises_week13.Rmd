@@ -1,0 +1,233 @@
+---
+title: "exercises_week13"
+author: "Lindsey Greenhill"
+date: "4/28/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(lme4)
+library(arm)
+library(stargazer)
+library(tidyverse)
+```
+
+# Question 11.4
+
+```{r include=FALSE}
+
+# reading in the data
+
+data <- read.csv("http://www.stat.columbia.edu/~gelman/arm/examples/cd4/allvar.csv", header=TRUE)
+View(data)
+
+# cleaning the data. making a root percentage
+
+data <- data %>%
+  drop_na() %>%
+  mutate(sqrtpct = sqrt(CD4PCT),
+         time = visage - baseage)
+
+
+
+```
+
+## Part a
+
+Inthe code below, I graph the square root CD4 percentage against time. 
+
+```{r}
+
+# not sure if we should just graph all of the data points or separate them by
+# child?
+
+graph_11_a <- data %>%
+  ggplot(aes(x = time, y = sqrtpct)) +
+  geom_point() +
+  labs(title = "Sqrt CDC level vs Time",
+       x = "Time",
+       y = "Sqrt CDC") +
+  theme_classic()
+
+# should facet wrap
+
+set.seed(18)
+# take random sample
+
+sample <- sample(unique(data$newpid), 16, replace = FALSE)
+
+# filtering to random sample
+
+data_11 <- data %>%
+  filter(newpid %in% sample)
+
+data_11 %>%
+  ggplot(aes(x = time, y = sqrtpct)) +
+  facet_wrap(~newpid) +
+  geom_point() +
+  theme_classic()
+```
+
+
+## Part b
+
+```{r}
+
+
+data_11 %>%
+  ggplot(aes(x = time, y = sqrtpct)) +
+  facet_wrap(~newpid) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  theme_classic()
+```
+
+## Part c
+
+```{r}
+c_mod <- data %>%
+  group_by(newpid) %>%
+  mutate(intercept = coef(lm(sqrtpct ~ time))[1],
+         slope = coef(lm(sqrtpct ~ time))[2])
+
+c_mod_1 <- lm(intercept ~ baseage + treatmnt, data = c_mod)
+c_mod_2 <- lm(slope ~ baseage + treatmnt, data = c_mod)
+
+summary(c_mod_1)
+summary(c_mod_2)
+```
+
+# Question 12.2
+
+## Part a
+
+In the code below, I create a model that predicts CD4 levels as a function of time, varying intercepts across children. 
+
+```{r}
+mod_12_a <- lmer(sqrtpct ~ time + (1 | newpid),
+                 data = data)
+
+# can't use stargzer with this model
+
+summary(mod_12_a)
+```
+
+
+* Coefficient of time: -.38. For every year following the initial visit, the
+patient's square root CD4 level is predicted to decrease by .38 on average. This
+coefficient is statistically significant.
+
+* Additionally, it seems like grouping the model by patient improves the model
+because the sd of its random effects is larger than that of the residual.
+
+
+## Part b
+
+In the code below, I extend the model in part a to include more predictors,
+specifically treatment and age at baseline.
+
+```{r}
+
+mod_12_b <- lmer(sqrtpct ~ time + treatmnt + baseage + (1 | newpid),
+                   data = data)
+
+summary(mod_12_b)
+
+```
+
+### Coefficient interpretations
+
+* Coefficient of time: -.38. For every year following the initial visit, the
+patient's square root CD4 level is predicted to decrease by .38 on average,
+holding all else constant. This coefficient is statistically significant.
+
+* Coefficient of base age: -.118. for every increase in the base age of a
+patient, the model predicts that the square root CD4 level will decrease by .11
+on average, holding all else constant. This coefficient is statistically
+significant.
+
+* Coefficient of treatment: .294. The model predicts that the patients who
+received treatment have on average .294 higher square root CD4 levels than those
+who did not receive the  treatment, holding all else constant. The coefficient
+is not statistically significant.
+
+
+## Part c
+
+In the code below, I look at the y hats for the models made in part a and part b
+above. I then plot these y hats against the only shared predictor in the models,
+time since baseline visit. The predictions from model a and the predictions from
+model b appear to be more or less the same. I confirmed this by looking at the
+distribution of the differences of predictions between b and a in the histogram
+below. The average difference in predictions is 0.
+
+```{r echo=FALSE}
+
+# predictions for model a
+
+pred_a <- as_tibble(predict(mod_12_a, newdata = data)) %>%
+  rename(A = value)
+
+# predictions for model b
+
+pred_b <- as_tibble(predict(mod_12_b, newdata = data)) %>%
+  rename(B = value)
+
+# creating an x column
+
+time <- data$time
+
+# combining the data
+
+comb <- pred_a %>% cbind(pred_b) %>%
+  cbind(time)
+
+# transforming the data into long format for plotting
+
+comb_long <- comb %>%
+  pivot_longer(cols = c("A", "B"),
+               names_to = "model",
+               values_to = "yhat")
+
+# creating graph
+
+graph_c <- comb_long %>%
+  ggplot(aes(x = time, y = yhat, col = model)) +
+  geom_point(alpha = .3) +
+  labs(title = "Model Predictions: CD4 vs time",
+       subtitle = "Models a and b have similar predictions",
+       x = "Time",
+       y = "y hat") + 
+  theme_classic()
+
+# difference in predictions
+
+comparison <- comb %>% mutate(difference = B - A)
+
+# histogram of differences
+
+plot_c_2 <- comparison %>%
+  ggplot(aes(x = difference)) +
+  geom_histogram(binwidth = .01) +
+  geom_vline(xintercept = mean(comparison$difference),
+             color = "red") +
+  labs(title = "Distribution of Prediction Differences",
+       subtitle = "The avg difference between B and A is 0",
+       x = "B yhat - A yhat") +
+  theme_classic()
+
+graph_c
+graph_c_2
+```
+
+
+
+
+
+
+
+
+
+
+
