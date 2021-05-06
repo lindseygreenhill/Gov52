@@ -11,6 +11,7 @@ library(lme4)
 library(arm)
 library(stargazer)
 library(tidyverse)
+set.seed(18)
 ```
 
 # Question 11.4
@@ -19,8 +20,8 @@ library(tidyverse)
 
 # reading in the data
 
-data <- read.csv("http://www.stat.columbia.edu/~gelman/arm/examples/cd4/allvar.csv", header=TRUE)
-View(data)
+data <- read.csv("http://www.stat.columbia.edu/~gelman/arm/examples/cd4/allvar.csv", 
+                 header=TRUE)
 
 # cleaning the data. making a root percentage
 
@@ -29,22 +30,24 @@ data <- data %>%
   mutate(sqrtpct = sqrt(CD4PCT),
          time = visage - baseage)
 
-
-
 ```
 
 ## Part a
 
-Inthe code below, I graph the square root CD4 percentage against time. 
+In the code below, I graph the square root CD4 percentage against time for all
+patients and for 16 randomly sampled patients. Both graphs show that there
+doesn't appear to be a consistent pattern amongst the patients. Some patients
+seems to have a negative correlation between CD4 levels and time while other
+appear to have no correlation or positive correlation.
 
-```{r}
+```{r echo=FALSE}
 
 # not sure if we should just graph all of the data points or separate them by
 # child?
 
-graph_11_a <- data %>%
+graph_11_a_1 <- data %>%
   ggplot(aes(x = time, y = sqrtpct)) +
-  geom_point() +
+  geom_point(alpha = .5) +
   labs(title = "Sqrt CDC level vs Time",
        x = "Time",
        y = "Sqrt CDC") +
@@ -52,7 +55,7 @@ graph_11_a <- data %>%
 
 # should facet wrap
 
-set.seed(18)
+
 # take random sample
 
 sample <- sample(unique(data$newpid), 16, replace = FALSE)
@@ -62,47 +65,94 @@ sample <- sample(unique(data$newpid), 16, replace = FALSE)
 data_11 <- data %>%
   filter(newpid %in% sample)
 
-data_11 %>%
+# graphing the individuals separately
+
+graph_11_a_2 <- data_11 %>%
   ggplot(aes(x = time, y = sqrtpct)) +
   facet_wrap(~newpid) +
   geom_point() +
+  geom_line() +
+  labs(title = "Sqrt CD4 level vs time",
+       subtitle = "Random Sample of 16 patients",
+       x = "Time",
+       y = "Sqrt CD4 level") +
   theme_classic()
+
+graph_11_a_1
+graph_11_a_2
 ```
 
 
 ## Part b
 
-```{r}
+In the code below, I show the linear fit of sqrt CD4 level vs time for the 16
+randomly sampled individuals from part a. As noted in part a, there does not
+seem to be a consistent relationship between CD4 levels and time amongst these 16
+patients.
 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
-data_11 %>%
+graph_11_b_1 <- data_11 %>%
   ggplot(aes(x = time, y = sqrtpct)) +
   facet_wrap(~newpid) +
   geom_point() +
   geom_smooth(method = "lm") +
+  labs(title = "Sqrt CD4 level vs time Linear Regression",
+       subtitle = "Random Sample of 16 patients",
+       x = "Time",
+       y = "Sqrt CD4 level") +
   theme_classic()
+graph_11_b_1
 ```
 
 ## Part c
 
-```{r}
+In the code below, I first calculate the slopes and intercepts of CD4 level
+for each patient in the data. In the first step, I group the data by newpid
+to generate intercepts and slopes specific to each indiviudal patient. In 
+the next step, I regressed the intercept and slopes from the individual models
+on baseage and treatment to get a 
+
+
+```{r message=FALSE}
+
+# creating regression coefficients grouped by newpid
+
 c_mod <- data %>%
-  group_by(newpid) %>%
-  mutate(intercept = coef(lm(sqrtpct ~ time))[1],
+  group_by(newpid, baseage, treatmnt) %>%
+  summarise(intercept = coef(lm(sqrtpct ~ time))[1],
          slope = coef(lm(sqrtpct ~ time))[2])
+
+# creating models to explain the differences in between the children
 
 c_mod_1 <- lm(intercept ~ baseage + treatmnt, data = c_mod)
 c_mod_2 <- lm(slope ~ baseage + treatmnt, data = c_mod)
 
 summary(c_mod_1)
 summary(c_mod_2)
+
 ```
+
+The first summary shows the regression output for the intercept model. The
+coefficient for baseage means that the model predicts that on average for every
+1 year increase in baseage there is a .12 point decrease in the intercept for
+in between children holding all else constatn. The model predicts that that
+treated children will on average have an intercept .25 points higher compared to
+non treated children, holding all else constant.
+
+The second summary shows the regression output for the slope model. The
+coefficient for baseage means that the model predicts that on average for every
+1 year increase in baseage a child's slope will be .02 points lower, holding all
+else constant. The model predicts that that treated children will on average
+have a slope .06 points lower compared to non treated children, holding all else
+constant.
 
 # Question 12.2
 
 ## Part a
 
-In the code below, I create a model that predicts CD4 levels as a function of time, varying intercepts across children. 
+In the code below, I create a model that predicts CD4 levels as a function of
+time, varying intercepts across children.
 
 ```{r}
 mod_12_a <- lmer(sqrtpct ~ time + (1 | newpid),
@@ -153,7 +203,7 @@ who did not receive the  treatment, holding all else constant. The coefficient
 is not statistically significant.
 
 
-## Part c
+## Part c and d
 
 In the code below, I look at the y hats for the models made in part a and part b
 above. I then plot these y hats against the only shared predictor in the models,
@@ -161,6 +211,13 @@ time since baseline visit. The predictions from model a and the predictions from
 model b appear to be more or less the same. I confirmed this by looking at the
 distribution of the differences of predictions between b and a in the histogram
 below. The average difference in predictions is 0.
+
+Additionally, we can compare the results from part a and b by looking at the
+different sigma and alpha values. For the first model, sigma = 1.39 and alpha =
+.76, meaning that the variation between groups is more than the variation within
+groups. For the second model, sigma = 1.36, which is less than sigma in the
+first model. This decrease suggests that adding the two predictors of baseage
+and treatment reduces variation between groups.
 
 ```{r echo=FALSE}
 
@@ -218,7 +275,7 @@ plot_c_2 <- comparison %>%
   theme_classic()
 
 graph_c
-graph_c_2
+plot_c_2
 ```
 
 
